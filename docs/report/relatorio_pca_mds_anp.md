@@ -1,4 +1,4 @@
-# Relatório curto - PCA e MDS em dados da ANP
+# Relatório curto: PCA e MDS em dados da ANP
 
 ## 1. Problema investigado
 
@@ -63,7 +63,7 @@ Figura principal: `outputs/figures/pca_2d_regiao.png`.
 
 ## 8. MDS 2D e interpretação das proximidades
 
-O MDS foi aplicado sobre os dados padronizados, usando distância euclidiana e amostra reprodutível de até 800 registros para manter a visualização viável. O stress calculado foi 179725.65; quanto menor esse valor, melhor a preservação das distâncias na projeção.
+O MDS foi aplicado sobre os dados padronizados, usando distância euclidiana e amostra de até 800 registros para manter a visualização viável. O stress calculado foi 179725.65; quanto menor esse valor, melhor a preservação das distâncias na projeção.
 
 No gráfico MDS, registros próximos representam UFs e meses com perfis semelhantes de preço, volume, participação do etanol, razão etanol/gasolina e variações mensais. A leitura visual mostrou proximidade entre registros de comportamento regional semelhante e maior afastamento de estados com peso muito alto de etanol ou volumes muito superiores ao restante do país.
 

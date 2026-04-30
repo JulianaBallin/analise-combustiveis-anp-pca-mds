@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import textwrap
 
 import matplotlib.pyplot as plt
 import nbformat as nbf
@@ -13,7 +12,13 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
 
-from src.data_preparation import FEATURES_NUMERICAS, PRECO_URL, VENDAS_URL, padronizar_features, preparar_dados
+from src.data_preparation import (
+    FEATURES_NUMERICAS,
+    PRECO_URL,
+    VENDAS_URL,
+    padronizar_features,
+    preparar_dados,
+)
 from src.mds_analysis import aplicar_mds
 from src.pca_analysis import aplicar_pca
 
@@ -25,19 +30,22 @@ DATA_PROCESSED = ROOT / "data" / "processed"
 REPORT_DIR = ROOT / "docs" / "report"
 SLIDES_DIR = ROOT / "docs" / "slides"
 NOTEBOOK_DIR = ROOT / "notebooks"
+PERIODO_INICIO = 2021
+PERIODO_FIM = 2025
+MAX_REGISTROS_MDS = 800
 
 
 def main() -> None:
     configurar_estilo()
     criar_diretorios()
 
-    dados = preparar_dados(periodo_inicio=2021, periodo_fim=2025)
+    dados = preparar_dados(periodo_inicio=PERIODO_INICIO, periodo_fim=PERIODO_FIM)
     dados_padronizados, _ = padronizar_features(dados)
 
     pca_df, cargas, variancia, _ = aplicar_pca(dados_padronizados)
     pca_plot = dados.join(pca_df)
 
-    mds_df, mds = aplicar_mds(dados_padronizados)
+    mds_df, mds = aplicar_mds(dados_padronizados, max_registros=MAX_REGISTROS_MDS)
     mds_plot = dados.loc[mds_df.index].join(mds_df)
 
     outliers = identificar_outliers(pca_plot)
@@ -50,6 +58,7 @@ def main() -> None:
     gerar_relatorio_md(contexto)
     gerar_relatorio_pdf()
     gerar_slides(contexto)
+    gerar_roteiro_slides_md(contexto)
     gerar_notebook()
 
 
@@ -126,7 +135,7 @@ def gerar_figuras(
 ) -> None:
     plt.figure(figsize=(10, 7))
     sns.scatterplot(data=pca_plot, x="PC1", y="PC2", hue="regiao", style="regiao", s=48, alpha=0.8)
-    plt.title("PCA 2D - estados e meses por região")
+    plt.title("PCA 2D: estados e meses por região")
     plt.xlabel(f"PC1 ({variancia.loc[0, 'variancia_explicada']:.1%} da variância)")
     plt.ylabel(f"PC2 ({variancia.loc[1, 'variancia_explicada']:.1%} da variância)")
     plt.legend(title="Região", bbox_to_anchor=(1.02, 1), loc="upper left")
@@ -135,7 +144,7 @@ def gerar_figuras(
 
     plt.figure(figsize=(10, 7))
     sns.scatterplot(data=mds_plot, x="MDS1", y="MDS2", hue="regiao", style="regiao", s=48, alpha=0.8)
-    plt.title("MDS 2D - proximidade entre registros")
+    plt.title("MDS 2D: proximidade entre registros")
     plt.xlabel("Dimensão MDS 1")
     plt.ylabel("Dimensão MDS 2")
     plt.legend(title="Região", bbox_to_anchor=(1.02, 1), loc="upper left")
@@ -217,7 +226,7 @@ def gerar_relatorio_md(ctx: dict) -> None:
         f"participação do etanol {row.participacao_etanol:.1%}, variação de volume da gasolina {row.variacao_volume_gasolina_c:.1%}."
         for row in ctx["outliers"].head(6).itertuples()
     )
-    texto = f"""# Relatório curto - PCA e MDS em dados da ANP
+    texto = f"""# Relatório curto: PCA e MDS em dados da ANP
 
 ## 1. Problema investigado
 
@@ -282,7 +291,7 @@ Figura principal: `outputs/figures/pca_2d_regiao.png`.
 
 ## 8. MDS 2D e interpretação das proximidades
 
-O MDS foi aplicado sobre os dados padronizados, usando distância euclidiana e amostra reprodutível de até 800 registros para manter a visualização viável. O stress calculado foi {ctx["stress_mds"]:.2f}; quanto menor esse valor, melhor a preservação das distâncias na projeção.
+O MDS foi aplicado sobre os dados padronizados, usando distância euclidiana e amostra de até {MAX_REGISTROS_MDS} registros para manter a visualização viável. O stress calculado foi {ctx["stress_mds"]:.2f}; quanto menor esse valor, melhor a preservação das distâncias na projeção.
 
 No gráfico MDS, registros próximos representam UFs e meses com perfis semelhantes de preço, volume, participação do etanol, razão etanol/gasolina e variações mensais. A leitura visual mostrou proximidade entre registros de comportamento regional semelhante e maior afastamento de estados com peso muito alto de etanol ou volumes muito superiores ao restante do país.
 
@@ -432,34 +441,168 @@ def gerar_slides(ctx: dict) -> None:
     prs.save(SLIDES_DIR / "apresentacao_pca_mds_anp.pptx")
 
 
+def gerar_roteiro_slides_md(ctx: dict) -> None:
+    """Cria um apoio simples para a apresentação oral."""
+    maior_etanol_txt = ", ".join(
+        f"{row.uf} ({row.participacao_media_etanol:.1%})"
+        for row in ctx["maior_etanol"].itertuples()
+    )
+    roteiro = f"""# Roteiro da apresentação: PCA e MDS em dados da ANP
+
+## Slide 1: Abertura
+
+Começar situando o tema. O trabalho usa dados públicos da ANP para observar preço da gasolina C, volume vendido de gasolina C e participação do etanol hidratado nos estados brasileiros.
+
+## Slide 2: Problema investigado
+
+Explicar o cenário da rede de postos ou distribuidora. A gestão precisa tomar decisões de estoque, mix de produtos, campanhas e metas regionais, mas olhar apenas o faturamento agregado não mostra se a mudança de volume veio de preço, substituição por etanol ou diferença regional.
+
+Fala sugerida: "Nossa pergunta principal foi entender em quais estados e períodos o preço da gasolina C se relaciona com o volume vendido e com a presença do etanol."
+
+## Slide 3: Dataset e preparação
+
+Apresentar as duas bases:
+
+- Série histórica mensal de preços por estado.
+- Vendas mensais de derivados de petróleo e etanol por UF.
+
+O recorte usado foi de {ctx["periodo"]}, com {ctx["ufs"]} UFs e {ctx["n_registros"]} registros. Cada linha representa um mês em uma UF. As variáveis numéricas foram padronizadas porque preço, volume e participação têm escalas diferentes.
+
+## Slide 4: PCA
+
+Explicar que o PCA transforma as variáveis originais em componentes principais. Os dois primeiros componentes explicaram {ctx["variancia_total"]:.1%} da variância total.
+
+Destacar:
+
+- PC1 explicou {ctx["variancia_pc1"]:.1%}.
+- PC2 explicou {ctx["variancia_pc2"]:.1%}.
+- PC1 foi mais influenciado por {", ".join(ctx["pc1_top"])}.
+- PC2 foi mais influenciado por {", ".join(ctx["pc2_top"])}.
+
+Fala sugerida: "O primeiro eixo ficou ligado principalmente à composição do consumo e ao peso do etanol. O segundo eixo capturou mais as oscilações mensais de preço e volume."
+
+## Slide 5: MDS
+
+Explicar que o MDS posiciona registros semelhantes próximos entre si, usando distâncias no espaço padronizado. O stress encontrado foi {ctx["stress_mds"]:.2f}, então o gráfico deve ser lido como apoio visual, não como prova exata de causalidade.
+
+Fala sugerida: "No MDS, o interesse é ver quem ficou perto de quem. Se dois registros aparecem próximos, eles têm perfis parecidos considerando preço, volume, participação do etanol e variações mensais."
+
+## Slide 6: Padrões e outliers
+
+Comentar que os estados com maior participação média do etanol no recorte foram {maior_etanol_txt}. São Paulo apareceu com destaque entre os outliers porque combina escala muito alta de vendas e participação forte do etanol.
+
+Fala sugerida: "O ponto atípico não significa erro. Nesse caso, ele mostra que São Paulo tem um comportamento muito diferente em escala e composição do consumo."
+
+## Slide 7: Comparação e conclusão
+
+Fechar comparando os métodos:
+
+- PCA ajuda a explicar quais variáveis organizam os dados.
+- MDS ajuda a visualizar registros parecidos.
+- PCA pode apoiar redução de features em modelos futuros.
+- MDS é melhor como visualização exploratória.
+
+Conclusão para falar: "Os dois métodos ajudaram a enxergar que o mercado não se resume ao preço da gasolina. Volume, participação do etanol, preço relativo e variações mensais também estruturam os padrões regionais."
+"""
+    (SLIDES_DIR / "roteiro_apresentacao_pca_mds_anp.md").write_text(roteiro, encoding="utf-8")
+
+
 def gerar_notebook() -> None:
     nb = nbf.v4.new_notebook()
     nb.cells = [
-        nbf.v4.new_markdown_cell("# Análise PCA e MDS - Combustíveis ANP\n\nNotebook reprodutível da atividade."),
+        nbf.v4.new_markdown_cell(
+            "# Análise PCA e MDS com dados da ANP\n\n"
+            "Este notebook registra o caminho usado pelo grupo para estudar a relação entre preço da gasolina C, "
+            "volume vendido e participação do etanol hidratado. A ideia é manter a análise próxima do problema do projeto: "
+            "uma rede de postos ou distribuidora precisa entender melhor diferenças regionais antes de decidir estoque, "
+            "mix comercial e campanhas."
+        ),
         nbf.v4.new_code_cell(
             "import sys\nfrom pathlib import Path\nsys.path.append(str(Path('..').resolve()))\n"
+            "import matplotlib.pyplot as plt\n"
             "import pandas as pd\nfrom src.data_preparation import FEATURES_NUMERICAS, padronizar_features, preparar_dados\n"
             "from src.pca_analysis import aplicar_pca\nfrom src.mds_analysis import aplicar_mds"
         ),
-        nbf.v4.new_markdown_cell("## Preparação dos dados"),
+        nbf.v4.new_markdown_cell(
+            "## Preparação dos dados\n\n"
+            "As bases da ANP vêm separadas: uma traz preços médios por estado e outra traz volumes vendidos por produto. "
+            "Nesta etapa, os nomes de estados são normalizados, gasolina C e etanol hidratado são selecionados, "
+            "as bases são cruzadas por mês e UF, e novas variáveis são calculadas para comparar preço, volume e participação do etanol."
+        ),
         nbf.v4.new_code_cell(
-            "dados = preparar_dados(periodo_inicio=2021, periodo_fim=2025)\n"
+            f"dados = preparar_dados(periodo_inicio={PERIODO_INICIO}, periodo_fim={PERIODO_FIM})\n"
             "dados_padronizados, scaler = padronizar_features(dados)\n"
             "dados.shape, FEATURES_NUMERICAS"
         ),
-        nbf.v4.new_markdown_cell("## PCA"),
+        nbf.v4.new_markdown_cell(
+            "## Conferência inicial\n\n"
+            "Antes de aplicar PCA e MDS, vale olhar algumas linhas do dataset tratado. Cada registro representa uma combinação de mês e UF. "
+            "As colunas de variação ajudam a observar mudanças mensais, enquanto participação e razão do etanol mostram o peso do combustível substituto."
+        ),
+        nbf.v4.new_code_cell(
+            "dados[['mes_ano', 'uf', 'regiao', 'preco_medio_gasolina_c', "
+            "'volume_gasolina_c_m3', 'volume_etanol_hidratado_m3', "
+            "'participacao_etanol']].head()"
+        ),
+        nbf.v4.new_markdown_cell(
+            "## Padronização\n\n"
+            "A padronização evita que variáveis de volume, que têm valores muito maiores, dominem a análise. "
+            "Depois desse passo, cada feature numérica passa a ser comparada em uma escala comum."
+        ),
+        nbf.v4.new_code_cell(
+            "dados_padronizados.describe().round(3)"
+        ),
+        nbf.v4.new_markdown_cell(
+            "## PCA\n\n"
+            "O PCA cria novas dimensões que concentram a variação dos dados. Aqui usamos duas componentes para visualizar os registros em um plano. "
+            "Também analisamos as cargas de cada variável, pois elas indicam quais features mais pesam em cada componente."
+        ),
         nbf.v4.new_code_cell(
             "pca_df, cargas, variancia, pca = aplicar_pca(dados_padronizados)\n"
             "display(variancia)\n"
             "display(cargas.sort_values('PC1', key=abs, ascending=False))"
         ),
-        nbf.v4.new_markdown_cell("## MDS"),
+        nbf.v4.new_markdown_cell(
+            "## Gráfico do PCA\n\n"
+            "No gráfico, cada ponto é um registro UF-mês. A cor por região ajuda a perceber se há separação regional. "
+            "Pontos muito afastados merecem atenção porque podem representar mercados de escala diferente, maior participação do etanol ou meses com mudança brusca."
+        ),
         nbf.v4.new_code_cell(
-            "mds_df, mds = aplicar_mds(dados_padronizados)\n"
+            "pca_plot = dados.join(pca_df)\n"
+            "ax = pca_plot.plot.scatter(x='PC1', y='PC2', c='participacao_etanol', colormap='viridis', figsize=(8, 6))\n"
+            "ax.set_title('PCA 2D por participação do etanol')\n"
+            "ax.set_xlabel(f\"PC1 ({variancia.loc[0, 'variancia_explicada']:.1%})\")\n"
+            "ax.set_ylabel(f\"PC2 ({variancia.loc[1, 'variancia_explicada']:.1%})\")\n"
+            "plt.show()"
+        ),
+        nbf.v4.new_markdown_cell(
+            "## MDS\n\n"
+            "O MDS parte das distâncias entre registros. Ele não mostra diretamente quais variáveis explicam os eixos, "
+            "mas ajuda a enxergar quais meses e estados ficaram próximos no perfil geral de preço, volume e participação do etanol."
+        ),
+        nbf.v4.new_code_cell(
+            f"mds_df, mds = aplicar_mds(dados_padronizados, max_registros={MAX_REGISTROS_MDS})\n"
             "print(f'Stress MDS: {mds.stress_:.2f}')\n"
             "mds_df.head()"
         ),
-        nbf.v4.new_markdown_cell("## Arquivos gerados\n\nExecute `python run_analysis.py` na raiz do repositório para gerar gráficos, tabelas, relatório e slides."),
+        nbf.v4.new_markdown_cell(
+            "## Gráfico do MDS\n\n"
+            "Nesta visualização, pontos próximos indicam registros com comportamento parecido nas features padronizadas. "
+            "A leitura deve ser feita com cuidado, pois a projeção em duas dimensões simplifica relações que originalmente estão em mais variáveis."
+        ),
+        nbf.v4.new_code_cell(
+            "mds_plot = dados.loc[mds_df.index].join(mds_df)\n"
+            "ax = mds_plot.plot.scatter(x='MDS1', y='MDS2', c='participacao_etanol', colormap='plasma', figsize=(8, 6))\n"
+            "ax.set_title('MDS 2D por participação do etanol')\n"
+            "ax.set_xlabel('MDS1')\n"
+            "ax.set_ylabel('MDS2')\n"
+            "plt.show()"
+        ),
+        nbf.v4.new_markdown_cell(
+            "## Leitura final\n\n"
+            "O PCA foi mais útil para explicar a influência das variáveis. O MDS complementou a análise ao mostrar proximidade entre registros. "
+            "Em conjunto, os dois métodos indicam que o comportamento do mercado depende de preço, escala de vendas e presença do etanol, não apenas de uma variável isolada."
+        ),
     ]
     nbf.write(nb, NOTEBOOK_DIR / "analise_pca_mds_anp.ipynb")
 

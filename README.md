@@ -25,7 +25,7 @@
 
 <h2 align="center">📝 Descrição do Projeto</h2>
 
-O projeto tem como objetivo aplicar técnicas de análise exploratória multidimensional em dados públicos da **ANP — Agência Nacional do Petróleo, Gás Natural e Biocombustíveis**, utilizando **PCA (Principal Component Analysis)** e **MDS (Multidimensional Scaling)**.
+O projeto tem como objetivo aplicar técnicas de análise exploratória multidimensional em dados públicos da **ANP, Agência Nacional do Petróleo, Gás Natural e Biocombustíveis**, utilizando **PCA (Principal Component Analysis)** e **MDS (Multidimensional Scaling)**.
 
 A análise busca compreender se a projeção dos dados em duas dimensões permite identificar **padrões regionais**, **agrupamentos**, **outliers**, **tendências** e possíveis relações entre o **preço médio da gasolina C**, o **volume vendido de gasolina C** e a possível **migração de consumo para o etanol hidratado**.
 
@@ -73,7 +73,7 @@ As variáveis selecionadas foram escolhidas por representarem aspectos relevante
 
 <h2 align="center">🧠 Explicação Teórica</h2>
 
-<h3>Principal Component Analysis — PCA</h3>
+<h3>Principal Component Analysis: PCA</h3>
 
 O **PCA** é uma técnica estatística utilizada para reduzir a dimensionalidade de um conjunto de dados numéricos. Ele transforma variáveis possivelmente correlacionadas em novas variáveis chamadas **componentes principais**.
 
@@ -87,7 +87,7 @@ Neste projeto, o PCA é utilizado para:
 - Avaliar quais variáveis mais influenciam os primeiros componentes principais;
 - Verificar se os dois primeiros componentes explicam uma parcela relevante da variância dos dados.
 
-<h3>Multidimensional Scaling — MDS</h3>
+<h3>Multidimensional Scaling: MDS</h3>
 
 O **MDS** é uma técnica de visualização que busca representar, em poucas dimensões, as relações de proximidade ou distância entre os registros de um conjunto de dados.
 
