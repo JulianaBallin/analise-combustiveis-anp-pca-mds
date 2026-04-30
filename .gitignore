@@ -77,6 +77,7 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+.ipynb_checkpoints/
 
 # IPython
 profile_default/
@@ -151,11 +152,16 @@ activemq-data/
 .env
 .envrc
 .venv
+.venv/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Local raw data cache
+data/raw/*
+!data/raw/.gitkeep
 
 # Spyder project settings
 .spyderproject
