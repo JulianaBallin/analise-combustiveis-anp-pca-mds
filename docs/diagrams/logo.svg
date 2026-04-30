@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="220" viewBox="0 0 840 220" role="img" aria-labelledby="title desc">
+  <title id="title">Análise de Combustíveis ANP</title>
+  <desc id="desc">Marca simples do projeto com gráfico de dispersão e linhas de análise.</desc>
+  <rect width="840" height="220" rx="18" fill="#f7fbfc"/>
+  <rect x="36" y="32" width="156" height="156" rx="16" fill="#12343b"/>
+  <circle cx="76" cy="146" r="10" fill="#f2b705"/>
+  <circle cx="112" cy="118" r="10" fill="#2aa876"/>
+  <circle cx="148" cy="74" r="10" fill="#f05a28"/>
+  <path d="M70 154 C98 128 124 112 154 68" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  <path d="M62 166 H168 M62 166 V54" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <text x="225" y="92" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#12343b">Combustíveis ANP</text>
+  <text x="225" y="135" font-family="Arial, Helvetica, sans-serif" font-size="25" fill="#287c8e">PCA e MDS para preços, vendas e etanol</text>
+  <text x="225" y="169" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#546a70">UEA · Ciência dos Dados</text>
+</svg>

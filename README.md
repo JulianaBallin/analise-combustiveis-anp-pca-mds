@@ -199,7 +199,7 @@ analise-combustiveis-anp-pca-mds/
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/SEU-USUARIO/analise-combustiveis-anp-pca-mds.git
+git clone https://github.com/JulianaBallin/analise-combustiveis-anp-pca-mds.git
 cd analise-combustiveis-anp-pca-mds
 ```
 
@@ -217,7 +217,15 @@ source .venv/bin/activate        # Linux/Mac
 pip install -r requirements.txt
 ```
 
-### 4. Executar o notebook
+### 4. Gerar todos os entregáveis
+
+```bash
+python run_analysis.py
+```
+
+Esse comando baixa as bases oficiais da ANP, prepara o dataset, executa PCA e MDS e gera tabelas, gráficos, relatório e slides.
+
+### 5. Executar o notebook
 
 ```bash
 jupyter notebook notebooks/analise_pca_mds_anp.ipynb
@@ -234,7 +242,31 @@ scikit-learn
 matplotlib
 seaborn
 jupyter
+openpyxl
+python-pptx
+reportlab
 ```
+
+---
+
+<h2 align="center">📌 Entregáveis da Atividade</h2>
+
+| Entregável | Arquivo |
+|---|---|
+| Relatório curto | `docs/report/relatorio_pca_mds_anp.md` e `docs/report/relatorio_pca_mds_anp.pdf` |
+| Notebook | `notebooks/analise_pca_mds_anp.ipynb` |
+| Código reprodutível | `run_analysis.py` e módulos em `src/` |
+| Dataset tratado | `data/processed/dataset_anp_pca_mds_2021_2025.csv` |
+| Gráficos | `outputs/figures/` |
+| Tabelas de apoio | `outputs/tables/` |
+| Slides | `docs/slides/apresentacao_pca_mds_anp.pptx` |
+
+Principais resultados do recorte 2021-2025:
+
+* Os dois primeiros componentes do PCA explicaram **63,8%** da variância total.
+* O PC1 foi mais influenciado por razão etanol/gasolina, participação do etanol e volumes vendidos.
+* O PC2 foi mais influenciado por variações mensais de preço e volume, preço médio da gasolina C e preço relativo do etanol.
+* São Paulo apareceu como principal outlier por combinar escala muito alta de vendas e elevada participação do etanol.
 
 ---
 
