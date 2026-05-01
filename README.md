@@ -259,7 +259,7 @@ reportlab
 | Dataset tratado | `data/processed/dataset_anp_pca_mds_2021_2025.csv` |
 | Gráficos | `outputs/figures/` |
 | Tabelas de apoio | `outputs/tables/` |
-| Slides | `docs/slides/apresentacao_pca_mds_anp.pptx` |
+| Slides | `docs/slides/apresentacao_pca_mds_anp.pdf` |
 
 Principais resultados do recorte 2021-2025:
 
