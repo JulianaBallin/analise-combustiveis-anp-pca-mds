@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import nbformat as nbf
 import pandas as pd
 import seaborn as sns
 from pptx import Presentation
@@ -275,7 +274,7 @@ A UF e a região foram mantidas como variáveis categóricas para colorir os gr�
 
 ## 6. Preparação e padronização dos dados
 
-As bases foram carregadas dos links oficiais da ANP, os nomes de estados foram normalizados, os produtos de interesse foram filtrados, os dados foram agregados por mês e UF e as tabelas de preço e volume foram cruzadas por mês, nome do estado e sigla da UF. A coluna de região é normalizada de forma unificada entre as fontes (incluindo equivalência entre rótulos como "Centro Oeste" e "Centro-Oeste") e não entra como chave do merge, evitando perda de UFs por divergência cadastral. Em seguida foram criadas variáveis derivadas de participação, razão, preço relativo e variações percentuais mensais.
+As bases foram carregadas nos links da ANP, filtramos gasolina C e etanol hidratado, agregamos por mês e UF e fizemos o **join só com `mes_ano` e a sigla `uf`**. Quando o nome completo do estado ou a grafia da região divergiam entre preços e vendas — cenário típico com rótulos de **Centro-Oeste** (`Centro Oeste` x `Centro-Oeste`), que chegava a derrubar em torno de **240 registros** de DF, GO, MS e MT na versão antiga do pipeline — esse desenho deixa de dropar observação porque não dependemos de `uf_nome` igual byte a byte. `uf_nome` e `região` vêm de um `combine_first` depois do merge e ainda passam por `normalizar_regiao` antes. Na sequência entram participação do etanol, razão volume, preço relativo e variações percentuais mensais dentro de cada UF.
 
 Como as features têm escalas muito diferentes, todas as variáveis numéricas foram padronizadas com `StandardScaler`. Essa etapa impede que volumes em m³ dominem indevidamente preços em reais ou indicadores percentuais.
 
@@ -466,7 +465,7 @@ Apresentar as duas bases:
 - Série histórica mensal de preços por estado.
 - Vendas mensais de derivados de petróleo e etanol por UF.
 
-O recorte usado foi de {ctx["periodo"]}, com {ctx["ufs"]} UFs e {ctx["n_registros"]} registros. Cada linha representa um mês em uma UF. As variáveis numéricas foram padronizadas porque preço, volume e participação têm escalas diferentes.
+O recorte usado foi de {ctx["periodo"]}, com {ctx["ufs"]} UFs e {ctx["n_registros"]} registros (join mês + sigla `uf`; regiões como Centro-Oeste deixaram de causar falha no merge). Cada linha é um mês em uma UF. Features numéricas receberam `StandardScaler`.
 
 ## Slide 4: PCA
 
@@ -508,105 +507,10 @@ Conclusão para falar: "Os dois métodos ajudaram a enxergar que o mercado não 
 
 
 def gerar_notebook() -> None:
-    nb = nbf.v4.new_notebook()
-    nb.cells = [
-        nbf.v4.new_markdown_cell(
-            "# Análise PCA e MDS com dados da ANP\n\n"
-            "Este notebook registra o caminho usado pelo grupo para estudar a relação entre preço da gasolina C, "
-            "volume vendido e participação do etanol hidratado. A ideia é manter a análise próxima do problema do projeto: "
-            "uma rede de postos ou distribuidora precisa entender melhor diferenças regionais antes de decidir estoque, "
-            "mix comercial e campanhas."
-        ),
-        nbf.v4.new_code_cell(
-            "import sys\nfrom pathlib import Path\nsys.path.append(str(Path('..').resolve()))\n"
-            "import matplotlib.pyplot as plt\n"
-            "import pandas as pd\nfrom src.data_preparation import FEATURES_NUMERICAS, padronizar_features, preparar_dados\n"
-            "from src.pca_analysis import aplicar_pca\nfrom src.mds_analysis import aplicar_mds"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## Preparação dos dados\n\n"
-            "As bases da ANP vêm separadas: uma traz preços médios por estado e outra traz volumes vendidos por produto. "
-            "Nesta etapa, os nomes de estados são normalizados, gasolina C e etanol hidratado são selecionados, "
-            "e as tabelas são cruzadas por mês e UF (a sigla já determina a região; o rótulo de região é normalizado entre as fontes, "
-            'por exemplo equivalendo "Centro Oeste" a "Centro-Oeste"). '
-            "Em seguida são calculadas variáveis derivadas para comparar preço, volume e participação do etanol."
-        ),
-        nbf.v4.new_code_cell(
-            f"dados = preparar_dados(periodo_inicio={PERIODO_INICIO}, periodo_fim={PERIODO_FIM})\n"
-            "dados_padronizados, scaler = padronizar_features(dados)\n"
-            "dados.shape, FEATURES_NUMERICAS"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## Conferência inicial\n\n"
-            "Antes de aplicar PCA e MDS, vale olhar algumas linhas do dataset tratado. Cada registro representa uma combinação de mês e UF. "
-            "As colunas de variação ajudam a observar mudanças mensais, enquanto participação e razão do etanol mostram o peso do combustível substituto."
-        ),
-        nbf.v4.new_code_cell(
-            "dados[['mes_ano', 'uf', 'regiao', 'preco_medio_gasolina_c', "
-            "'volume_gasolina_c_m3', 'volume_etanol_hidratado_m3', "
-            "'participacao_etanol']].head()"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## Padronização\n\n"
-            "A padronização evita que variáveis de volume, que têm valores muito maiores, dominem a análise. "
-            "Depois desse passo, cada feature numérica passa a ser comparada em uma escala comum."
-        ),
-        nbf.v4.new_code_cell(
-            "dados_padronizados.describe().round(3)"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## PCA\n\n"
-            "O PCA cria novas dimensões que concentram a variação dos dados. Aqui usamos duas componentes para visualizar os registros em um plano. "
-            "Também analisamos as cargas de cada variável, pois elas indicam quais features mais pesam em cada componente."
-        ),
-        nbf.v4.new_code_cell(
-            "pca_df, cargas, variancia, pca = aplicar_pca(dados_padronizados)\n"
-            "display(variancia)\n"
-            "display(cargas.sort_values('PC1', key=abs, ascending=False))"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## Gráfico do PCA\n\n"
-            "No gráfico, cada ponto é um registro UF-mês. A cor por região ajuda a perceber se há separação regional. "
-            "Pontos muito afastados merecem atenção porque podem representar mercados de escala diferente, maior participação do etanol ou meses com mudança brusca."
-        ),
-        nbf.v4.new_code_cell(
-            "pca_plot = dados.join(pca_df)\n"
-            "ax = pca_plot.plot.scatter(x='PC1', y='PC2', c='participacao_etanol', colormap='viridis', figsize=(8, 6))\n"
-            "ax.set_title('PCA 2D por participação do etanol')\n"
-            "ax.set_xlabel(f\"PC1 ({variancia.loc[0, 'variancia_explicada']:.1%})\")\n"
-            "ax.set_ylabel(f\"PC2 ({variancia.loc[1, 'variancia_explicada']:.1%})\")\n"
-            "plt.show()"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## MDS\n\n"
-            "O MDS parte das distâncias entre registros. Ele não mostra diretamente quais variáveis explicam os eixos, "
-            "mas ajuda a enxergar quais meses e estados ficaram próximos no perfil geral de preço, volume e participação do etanol."
-        ),
-        nbf.v4.new_code_cell(
-            f"mds_df, mds = aplicar_mds(dados_padronizados, max_registros={MAX_REGISTROS_MDS})\n"
-            "print(f'Stress MDS: {mds.stress_:.2f}')\n"
-            "mds_df.head()"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## Gráfico do MDS\n\n"
-            "Nesta visualização, pontos próximos indicam registros com comportamento parecido nas features padronizadas. "
-            "A leitura deve ser feita com cuidado, pois a projeção em duas dimensões simplifica relações que originalmente estão em mais variáveis."
-        ),
-        nbf.v4.new_code_cell(
-            "mds_plot = dados.loc[mds_df.index].join(mds_df)\n"
-            "ax = mds_plot.plot.scatter(x='MDS1', y='MDS2', c='participacao_etanol', colormap='plasma', figsize=(8, 6))\n"
-            "ax.set_title('MDS 2D por participação do etanol')\n"
-            "ax.set_xlabel('MDS1')\n"
-            "ax.set_ylabel('MDS2')\n"
-            "plt.show()"
-        ),
-        nbf.v4.new_markdown_cell(
-            "## Leitura final\n\n"
-            "O PCA foi mais útil para explicar a influência das variáveis. O MDS complementou a análise ao mostrar proximidade entre registros. "
-            "Em conjunto, os dois métodos indicam que o comportamento do mercado depende de preço, escala de vendas e presença do etanol, não apenas de uma variável isolada."
-        ),
-    ]
-    nbf.write(nb, NOTEBOOK_DIR / "analise_pca_mds_anp.ipynb")
+    """O arquivo `notebooks/analise_pca_mds_anp.ipynb` é mantido no repositório e não é sobrescrito por esta pipeline.
+
+    Execute o notebook no Jupyter quando quiser repetir os gráficos; o período de análise está na chamada a ``preparar_dados(...)``.
+    """
 
 
 if __name__ == "__main__":

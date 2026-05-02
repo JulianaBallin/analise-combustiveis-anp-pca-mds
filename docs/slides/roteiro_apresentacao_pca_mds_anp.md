@@ -17,7 +17,7 @@ Apresentar as duas bases:
 - Série histórica mensal de preços por estado.
 - Vendas mensais de derivados de petróleo e etanol por UF.
 
-O recorte usado foi de 01/2021 a 12/2025, com 27 UFs e 1619 registros. Cada linha representa um mês em uma UF. As variáveis numéricas foram padronizadas porque preço, volume e participação têm escalas diferentes.
+O recorte usado foi de 01/2021 a 12/2025, com 27 UFs e 1619 registros (join mês + sigla `uf`; regiões como Centro-Oeste deixaram de causar falha no merge). Cada linha é um mês em uma UF. Features numéricas receberam `StandardScaler`.
 
 ## Slide 4: PCA
 

@@ -47,7 +47,7 @@ A UF e a região foram mantidas como variáveis categóricas para colorir os gr�
 
 ## 6. Preparação e padronização dos dados
 
-As bases foram carregadas dos links oficiais da ANP, os nomes de estados foram normalizados, os produtos de interesse foram filtrados, os dados foram agregados por mês e UF e as tabelas de preço e volume foram cruzadas por mês, nome do estado e sigla da UF. A coluna de região é normalizada de forma unificada entre as fontes (incluindo equivalência entre rótulos como "Centro Oeste" e "Centro-Oeste") e não entra como chave do merge, evitando perda de UFs por divergência cadastral. Em seguida foram criadas variáveis derivadas de participação, razão, preço relativo e variações percentuais mensais.
+As bases foram carregadas nos links da ANP, filtramos gasolina C e etanol hidratado, agregamos por mês e UF e fizemos o **join só com `mes_ano` e a sigla `uf`**. Quando o nome completo do estado ou a grafia da região divergiam entre preços e vendas — cenário típico com rótulos de **Centro-Oeste** (`Centro Oeste` x `Centro-Oeste`), que chegava a derrubar em torno de **240 registros** de DF, GO, MS e MT na versão antiga do pipeline — esse desenho deixa de dropar observação porque não dependemos de `uf_nome` igual byte a byte. `uf_nome` e `região` vêm de um `combine_first` depois do merge e ainda passam por `normalizar_regiao` antes. Na sequência entram participação do etanol, razão volume, preço relativo e variações percentuais mensais dentro de cada UF.
 
 Como as features têm escalas muito diferentes, todas as variáveis numéricas foram padronizadas com `StandardScaler`. Essa etapa impede que volumes em m³ dominem indevidamente preços em reais ou indicadores percentuais.
 

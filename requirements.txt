@@ -1,9 +1,8 @@
 pandas
 numpy
-scikit-learn
+scikit-learn>=1.7
 matplotlib
 seaborn
 openpyxl
-nbformat
 python-pptx
 reportlab

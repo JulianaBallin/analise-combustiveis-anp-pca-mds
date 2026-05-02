@@ -223,7 +223,7 @@ pip install -r requirements.txt
 python run_analysis.py
 ```
 
-Esse comando baixa as bases oficiais da ANP, prepara o dataset, executa PCA e MDS e gera tabelas, gráficos, relatório e slides.
+Esse comando baixa as bases oficiais da ANP, prepara o dataset (`merge` por **`mes_ano` + sigla `uf`**, sem depender do texto idêntico de `uf_nome` entre fontes — isso evitava perder **~240** linhas em DF, GO, MS e MT quando Centro-Oeste grafava diferente nas duas bases), executa PCA e MDS e gera tabelas, gráficos, relatório e slides. O MDS usa parâmetros alinhados ao **scikit-learn 1.7+** (`metric`, `dissimilarity`, `normalized_stress`).
 
 ### 5. Executar o notebook
 
@@ -261,7 +261,7 @@ reportlab
 | Tabelas de apoio | `outputs/tables/` |
 | Slides | `docs/slides/apresentacao_pca_mds_anp.pdf` |
 
-Principais resultados do recorte 2021-2025 (27 UFs, 1619 registros UF-mês após correção do cruzamento das bases):
+Principais resultados do recorte 2021-2025 (27 UFs, 1619 registros UF-mês após o join corrigido mês+UF e alinhamento do PCA atual):
 
 * Os dois primeiros componentes do PCA explicaram **cerca de 57,5%** da variância total.
 * O PC1 foi mais influenciado por participação do etanol, razão etanol/gasolina, volume de etanol e preço relativo etanol/gasolina.

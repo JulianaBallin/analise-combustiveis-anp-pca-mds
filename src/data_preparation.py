@@ -90,14 +90,23 @@ def preparar_dados(periodo_inicio: int = 2021, periodo_fim: int = 2025) -> pd.Da
     precos = carregar_precos()
     vendas = carregar_vendas()
 
+    # Chave apenas mês + sigla UF: evita perda por divergência de texto no nome cheio entre as fontes.
     dados = precos.merge(
         vendas,
-        on=["mes_ano", "uf_nome", "uf"],
+        on=["mes_ano", "uf"],
         how="inner",
         suffixes=("_preco", "_vendas"),
     )
+    dados["uf_nome"] = dados["uf_nome_preco"].combine_first(dados["uf_nome_vendas"])
     dados["regiao"] = dados["regiao_preco"].combine_first(dados["regiao_vendas"])
-    dados = dados.drop(columns=["regiao_preco", "regiao_vendas"])
+    dados = dados.drop(
+        columns=[
+            "uf_nome_preco",
+            "uf_nome_vendas",
+            "regiao_preco",
+            "regiao_vendas",
+        ]
+    )
     dados = dados.sort_values(["uf", "mes_ano"]).reset_index(drop=True)
     dados["volume_total_analisado_m3"] = (
         dados["volume_gasolina_c_m3"] + dados["volume_etanol_hidratado_m3"]
