@@ -110,7 +110,7 @@ Antes da aplicação das técnicas, os dados passam pelas seguintes etapas:
 2. Padronização dos nomes das colunas;
 3. Seleção dos combustíveis de interesse: gasolina C e etanol hidratado;
 4. Agregação dos dados por mês e Unidade Federativa;
-5. Cruzamento entre dados de preço e volume vendido;
+5. Cruzamento entre dados de preço e volume vendido (por mês e UF, com rotulagem de região normalizada entre as fontes para incluir todas as UFs);
 6. Criação de variáveis derivadas;
 7. Tratamento de valores ausentes;
 8. Seleção das features numéricas;
@@ -261,12 +261,12 @@ reportlab
 | Tabelas de apoio | `outputs/tables/` |
 | Slides | `docs/slides/apresentacao_pca_mds_anp.pdf` |
 
-Principais resultados do recorte 2021-2025:
+Principais resultados do recorte 2021-2025 (27 UFs, 1619 registros UF-mês após correção do cruzamento das bases):
 
-* Os dois primeiros componentes do PCA explicaram **63,8%** da variância total.
-* O PC1 foi mais influenciado por razão etanol/gasolina, participação do etanol e volumes vendidos.
-* O PC2 foi mais influenciado por variações mensais de preço e volume, preço médio da gasolina C e preço relativo do etanol.
-* São Paulo apareceu como principal outlier por combinar escala muito alta de vendas e elevada participação do etanol.
+* Os dois primeiros componentes do PCA explicaram **cerca de 57,5%** da variância total.
+* O PC1 foi mais influenciado por participação do etanol, razão etanol/gasolina, volume de etanol e preço relativo etanol/gasolina.
+* O PC2 foi mais influenciado por variação mensal de preço da gasolina, volume de gasolina, variação mensal de volume e preço médio da gasolina C.
+* São Paulo segue entre os principais outliers por combinar escala muito alta de vendas e elevada participação do etanol.
 
 ---
 

@@ -23,7 +23,7 @@ Foram usadas duas bases públicas da ANP:
 - Série histórica mensal do levantamento de preços por estado, com preço médio de revenda da gasolina C e do etanol hidratado.
 - Vendas de derivados de petróleo e etanol, com volumes mensais vendidos em metros cúbicos por UF e produto.
 
-O recorte final contém 1379 registros, 23 UFs e período de 01/2021 a 12/2025. Cada registro representa uma combinação UF-mês após cruzamento entre preços e vendas.
+O recorte final contém 1619 registros, 27 UFs e período de 01/2021 a 12/2025. Cada registro representa uma combinação UF-mês após cruzamento entre preços e vendas.
 
 Fontes:
 
@@ -47,15 +47,15 @@ A UF e a região foram mantidas como variáveis categóricas para colorir os gr�
 
 ## 6. Preparação e padronização dos dados
 
-As bases foram carregadas dos links oficiais da ANP, os nomes de estados foram normalizados, os produtos de interesse foram filtrados, os dados foram agregados por mês e UF e as tabelas de preço e volume foram cruzadas. Em seguida foram criadas variáveis derivadas de participação, razão, preço relativo e variações percentuais mensais.
+As bases foram carregadas dos links oficiais da ANP, os nomes de estados foram normalizados, os produtos de interesse foram filtrados, os dados foram agregados por mês e UF e as tabelas de preço e volume foram cruzadas por mês, nome do estado e sigla da UF. A coluna de região é normalizada de forma unificada entre as fontes (incluindo equivalência entre rótulos como "Centro Oeste" e "Centro-Oeste") e não entra como chave do merge, evitando perda de UFs por divergência cadastral. Em seguida foram criadas variáveis derivadas de participação, razão, preço relativo e variações percentuais mensais.
 
 Como as features têm escalas muito diferentes, todas as variáveis numéricas foram padronizadas com `StandardScaler`. Essa etapa impede que volumes em m³ dominem indevidamente preços em reais ou indicadores percentuais.
 
 ## 7. PCA 2D, variância explicada e contribuição das variáveis
 
-Os dois primeiros componentes explicaram 63.8% da variância total: PC1 explicou 47.5% e PC2 explicou 16.3%.
+Os dois primeiros componentes explicaram 57.5% da variância total: PC1 explicou 40.5% e PC2 explicou 16.9%.
 
-As variáveis que mais influenciaram PC1 foram: razao_etanol_gasolina, participacao_etanol, volume_etanol_hidratado_m3, volume_gasolina_c_m3. As que mais influenciaram PC2 foram: variacao_preco_gasolina_c, variacao_volume_gasolina_c, preco_medio_gasolina_c, preco_relativo_etanol_gasolina.
+As variáveis que mais influenciaram PC1 foram: participacao_etanol, razao_etanol_gasolina, volume_etanol_hidratado_m3, preco_relativo_etanol_gasolina. As que mais influenciaram PC2 foram: variacao_preco_gasolina_c, volume_gasolina_c_m3, variacao_volume_gasolina_c, preco_medio_gasolina_c.
 
 Isso indica que a primeira dimensão separou principalmente estados e meses pelo porte e composição do consumo, enquanto a segunda dimensão destacou mudanças relativas de preço, volume e competitividade do etanol.
 
@@ -63,7 +63,7 @@ Figura principal: `outputs/figures/pca_2d_regiao.png`.
 
 ## 8. MDS 2D e interpretação das proximidades
 
-O MDS foi aplicado sobre os dados padronizados, usando distância euclidiana e amostra de até 800 registros para manter a visualização viável. O stress calculado foi 179725.65; quanto menor esse valor, melhor a preservação das distâncias na projeção.
+O MDS foi aplicado sobre os dados padronizados, usando distância euclidiana e amostra de até 800 registros para manter a visualização viável. O stress calculado foi 208340.59; quanto menor esse valor, melhor a preservação das distâncias na projeção.
 
 No gráfico MDS, registros próximos representam UFs e meses com perfis semelhantes de preço, volume, participação do etanol, razão etanol/gasolina e variações mensais. A leitura visual mostrou proximidade entre registros de comportamento regional semelhante e maior afastamento de estados com peso muito alto de etanol ou volumes muito superiores ao restante do país.
 
@@ -79,7 +79,7 @@ Os padrões gerais foram compatíveis: estados com maior participação do etano
 
 Antes da análise, esperava-se encontrar diferenças regionais, destaque de estados com maior consumo absoluto, separação parcial de mercados onde o etanol tem maior relevância e alguns meses atípicos ligados a variações bruscas de preço ou volume.
 
-Os estados com maior participação média do etanol no recorte foram: SP (48.4%), MG (33.0%), RJ (26.2%), PR (25.4%), AM (21.1%). Os estados com menor participação média foram: AP (0.7%), RS (1.9%), RR (3.6%), RO (4.1%), SC (4.9%).
+Os estados com maior participação média do etanol no recorte foram: MT (59.9%), GO (50.3%), SP (48.4%), MG (33.0%), RJ (26.2%). Os estados com menor participação média foram: AP (0.7%), RS (1.9%), RR (3.6%), RO (4.1%), SC (4.9%).
 
 Esses padrões fazem sentido no contexto do projeto, porque o etanol é mais competitivo e mais presente em alguns mercados, enquanto em outros a gasolina C domina a composição de consumo.
 
@@ -87,12 +87,12 @@ Esses padrões fazem sentido no contexto do projeto, porque o etanol é mais com
 
 Os principais registros afastados no PCA foram:
 
-- SP em 03/2024: gasolina R$ 5.61, participação do etanol 53.5%, variação de volume da gasolina 13.6%.
 - SP em 12/2025: gasolina R$ 6.06, participação do etanol 49.8%, variação de volume da gasolina 17.7%.
 - SP em 12/2023: gasolina R$ 5.50, participação do etanol 51.0%, variação de volume da gasolina 8.6%.
+- SP em 03/2024: gasolina R$ 5.61, participação do etanol 53.5%, variação de volume da gasolina 13.6%.
 - SP em 12/2024: gasolina R$ 5.96, participação do etanol 52.1%, variação de volume da gasolina 7.3%.
 - SP em 10/2024: gasolina R$ 5.91, participação do etanol 52.7%, variação de volume da gasolina 9.0%.
-- SP em 05/2024: gasolina R$ 5.64, participação do etanol 53.4%, variação de volume da gasolina 1.6%.
+- SP em 10/2025: gasolina R$ 6.05, participação do etanol 51.3%, variação de volume da gasolina 5.1%.
 
 Esses outliers são explicados principalmente por combinações de grande escala de volume, participação elevada do etanol, variações mensais fortes ou preço relativo do etanol muito diferente do padrão nacional.
 

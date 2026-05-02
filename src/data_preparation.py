@@ -81,11 +81,23 @@ def remover_acentos(texto: object) -> str:
     return "".join(c for c in normalizado if not unicodedata.combining(c))
 
 
+def normalizar_regiao(texto: object) -> str:
+    """Unifica rotulagem de região entre bases ANP (ex.: CENTRO OESTE vs CENTRO-OESTE)."""
+    return remover_acentos(texto).replace("REGIAO ", "").replace("-", " ")
+
+
 def preparar_dados(periodo_inicio: int = 2021, periodo_fim: int = 2025) -> pd.DataFrame:
     precos = carregar_precos()
     vendas = carregar_vendas()
 
-    dados = precos.merge(vendas, on=["mes_ano", "uf_nome", "uf", "regiao"], how="inner")
+    dados = precos.merge(
+        vendas,
+        on=["mes_ano", "uf_nome", "uf"],
+        how="inner",
+        suffixes=("_preco", "_vendas"),
+    )
+    dados["regiao"] = dados["regiao_preco"].combine_first(dados["regiao_vendas"])
+    dados = dados.drop(columns=["regiao_preco", "regiao_vendas"])
     dados = dados.sort_values(["uf", "mes_ano"]).reset_index(drop=True)
     dados["volume_total_analisado_m3"] = (
         dados["volume_gasolina_c_m3"] + dados["volume_etanol_hidratado_m3"]
@@ -132,7 +144,7 @@ def carregar_precos() -> pd.DataFrame:
     )
     precos["uf_nome"] = precos["uf_nome"].map(remover_acentos)
     precos["uf"] = precos["uf_nome"].map(UF_NOMES)
-    precos["regiao"] = precos["regiao"].map(remover_acentos)
+    precos["regiao"] = precos["regiao"].map(normalizar_regiao)
     precos = precos.dropna(subset=["uf"])
     precos = precos.pivot_table(
         index=["mes_ano", "uf_nome", "uf", "regiao"],
@@ -161,7 +173,7 @@ def carregar_vendas() -> pd.DataFrame:
     )
     vendas["uf_nome"] = vendas["unidade_da_federacao"].map(remover_acentos)
     vendas["uf"] = vendas["uf_nome"].map(UF_NOMES)
-    vendas["regiao"] = vendas["grande_regiao"].map(remover_acentos).str.replace("REGIAO ", "")
+    vendas["regiao"] = vendas["grande_regiao"].map(normalizar_regiao)
     vendas["mes_num"] = vendas["mes"].map(MESES)
     vendas["mes_ano"] = pd.to_datetime(
         dict(year=vendas["ano"], month=vendas["mes_num"], day=1)

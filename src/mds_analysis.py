@@ -11,13 +11,12 @@ def aplicar_mds(dados_padronizados: pd.DataFrame, max_registros: int = 800):
 
     mds = MDS(
         n_components=2,
-        metric_mds=True,
+        metric=True,
         random_state=42,
         n_init=4,
-        init="random",
         max_iter=300,
         normalized_stress="auto",
-        metric="euclidean",
+        dissimilarity="euclidean",
     )
     coords = mds.fit_transform(amostra)
     resultado = pd.DataFrame(coords, columns=["MDS1", "MDS2"], index=amostra.index)

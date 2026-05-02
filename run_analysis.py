@@ -275,7 +275,7 @@ A UF e a região foram mantidas como variáveis categóricas para colorir os gr�
 
 ## 6. Preparação e padronização dos dados
 
-As bases foram carregadas dos links oficiais da ANP, os nomes de estados foram normalizados, os produtos de interesse foram filtrados, os dados foram agregados por mês e UF e as tabelas de preço e volume foram cruzadas. Em seguida foram criadas variáveis derivadas de participação, razão, preço relativo e variações percentuais mensais.
+As bases foram carregadas dos links oficiais da ANP, os nomes de estados foram normalizados, os produtos de interesse foram filtrados, os dados foram agregados por mês e UF e as tabelas de preço e volume foram cruzadas por mês, nome do estado e sigla da UF. A coluna de região é normalizada de forma unificada entre as fontes (incluindo equivalência entre rótulos como "Centro Oeste" e "Centro-Oeste") e não entra como chave do merge, evitando perda de UFs por divergência cadastral. Em seguida foram criadas variáveis derivadas de participação, razão, preço relativo e variações percentuais mensais.
 
 Como as features têm escalas muito diferentes, todas as variáveis numéricas foram padronizadas com `StandardScaler`. Essa etapa impede que volumes em m³ dominem indevidamente preços em reais ou indicadores percentuais.
 
@@ -527,7 +527,9 @@ def gerar_notebook() -> None:
             "## Preparação dos dados\n\n"
             "As bases da ANP vêm separadas: uma traz preços médios por estado e outra traz volumes vendidos por produto. "
             "Nesta etapa, os nomes de estados são normalizados, gasolina C e etanol hidratado são selecionados, "
-            "as bases são cruzadas por mês e UF, e novas variáveis são calculadas para comparar preço, volume e participação do etanol."
+            "e as tabelas são cruzadas por mês e UF (a sigla já determina a região; o rótulo de região é normalizado entre as fontes, "
+            'por exemplo equivalendo "Centro Oeste" a "Centro-Oeste"). '
+            "Em seguida são calculadas variáveis derivadas para comparar preço, volume e participação do etanol."
         ),
         nbf.v4.new_code_cell(
             f"dados = preparar_dados(periodo_inicio={PERIODO_INICIO}, periodo_fim={PERIODO_FIM})\n"
