@@ -223,7 +223,7 @@ pip install -r requirements.txt
 python run_analysis.py
 ```
 
-Esse comando baixa as bases oficiais da ANP, prepara o dataset (`merge` por **`mes_ano` + sigla `uf`**, sem depender do texto idêntico de `uf_nome` entre fontes — isso evitava perder **~240** linhas em DF, GO, MS e MT quando Centro-Oeste grafava diferente nas duas bases), executa PCA e MDS e gera tabelas, gráficos, relatório e slides. O MDS usa parâmetros alinhados ao **scikit-learn 1.7+** (`metric`, `dissimilarity`, `normalized_stress`).
+Esse comando baixa as bases oficiais da ANP, prepara o dataset (`merge` por **`mes_ano` + sigla `uf`**, sem depender do texto idêntico de `uf_nome` entre fontes; isso evitava perder **~240** linhas em DF, GO, MS e MT quando Centro-Oeste grafava diferente nas duas bases), executa PCA e MDS e gera tabelas, gráficos, relatório e slides. O MDS usa parâmetros alinhados ao **scikit-learn 1.7+** (`metric`, `dissimilarity`, `normalized_stress`).
 
 ### 5. Executar o notebook
 
