@@ -4,7 +4,7 @@
 
 <p align="center">
   Análise exploratória multidimensional de preços e vendas de combustíveis da ANP utilizando <strong>PCA</strong> e <strong>MDS</strong>.<br>
-  <em>Projeto Acadêmico - UEA • Ciência dos Dados</em>
+  <em>Projeto Acadêmico - UEA • Ciência de Dados</em>
 </p>
 
 ---
@@ -318,4 +318,4 @@ Ao final da análise, espera-se identificar:
 
 ---
 
-<h3 align="center">UEA • Ciência dos Dados • Análise de Combustíveis ANP com PCA e MDS</h3>
+<h3 align="center">UEA • Ciência de Dados • Análise de Combustíveis ANP com PCA e MDS</h3>
