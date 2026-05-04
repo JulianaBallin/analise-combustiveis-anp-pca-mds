@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -7,9 +8,12 @@ import pandas as pd
 import seaborn as sns
 from pptx import Presentation
 from pptx.util import Inches, Pt
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_JUSTIFY
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+from reportlab.lib.units import cm
+from reportlab.platypus import BaseDocTemplate, Frame, Image, PageTemplate, Paragraph, Spacer
 
 from src.data_preparation import (
     FEATURES_NUMERICAS,
@@ -29,6 +33,7 @@ DATA_PROCESSED = ROOT / "data" / "processed"
 REPORT_DIR = ROOT / "docs" / "report"
 SLIDES_DIR = ROOT / "docs" / "slides"
 NOTEBOOK_DIR = ROOT / "notebooks"
+LOGO_PNG = ROOT / "docs" / "diagrams" / "logo.png"
 PERIODO_INICIO = 2021
 PERIODO_FIM = 2025
 MAX_REGISTROS_MDS = 800
@@ -286,6 +291,10 @@ As variáveis que mais influenciaram PC1 foram: {", ".join(ctx["pc1_top"])}. As 
 
 Isso indica que a primeira dimensão separou principalmente estados e meses pelo porte e composição do consumo, enquanto a segunda dimensão destacou mudanças relativas de preço, volume e competitividade do etanol.
 
+Figura: `outputs/figures/pca_variancia_explicada.png`.
+
+Figura: `outputs/figures/pca_cargas_componentes.png`.
+
 Figura principal: `outputs/figures/pca_2d_regiao.png`.
 
 ## 8. MDS 2D e interpretação das proximidades
@@ -318,6 +327,8 @@ Os principais registros afastados no PCA foram:
 
 Esses outliers são explicados principalmente por combinações de grande escala de volume, participação elevada do etanol, variações mensais fortes ou preço relativo do etanol muito diferente do padrão nacional.
 
+Figura: `outputs/figures/outliers_pca.png`.
+
 ## 12. Riscos de interpretação
 
 Existe risco de interpretar agrupamentos visuais como prova causal. PCA e MDS mostram associação e proximidade, mas não provam que o aumento de preço causou diretamente queda de volume. Também há risco de perder informação ao reduzir oito variáveis para duas dimensões, além de limitações das bases agregadas da ANP e ausência de variáveis externas como renda, frota, inflação, câmbio, clima e campanhas comerciais.
@@ -337,10 +348,39 @@ Para o cenário da rede de postos ou distribuidora, os métodos ajudam a identif
     (REPORT_DIR / "relatorio_pca_mds_anp.md").write_text(texto, encoding="utf-8")
 
 
+def _cabecalho_rodape(canvas, doc) -> None:
+    canvas.saveState()
+    page_w, page_h = A4
+    cor_linha = colors.HexColor("#287c8e")
+    cor_texto = colors.HexColor("#546a70")
+    if LOGO_PNG.exists():
+        canvas.drawImage(
+            str(LOGO_PNG),
+            1.5 * cm,
+            page_h - 2.6 * cm,
+            width=9 * cm,
+            height=1.7 * cm,
+            preserveAspectRatio=True,
+            mask="auto",
+        )
+    canvas.setStrokeColor(cor_linha)
+    canvas.setLineWidth(0.5)
+    canvas.line(1.5 * cm, page_h - 2.9 * cm, page_w - 1.5 * cm, page_h - 2.9 * cm)
+    canvas.line(1.5 * cm, 1.9 * cm, page_w - 1.5 * cm, 1.9 * cm)
+    canvas.setFont("Helvetica", 9)
+    canvas.setFillColor(cor_texto)
+    canvas.drawCentredString(page_w / 2, 1.1 * cm, f"Página {doc.page}")
+    canvas.restoreState()
+
+
 def gerar_relatorio_pdf() -> None:
     md = (REPORT_DIR / "relatorio_pca_mds_anp.md").read_text(encoding="utf-8")
-    doc = SimpleDocTemplate(str(REPORT_DIR / "relatorio_pca_mds_anp.pdf"), pagesize=A4)
+
     styles = getSampleStyleSheet()
+    styles["BodyText"].alignment = TA_JUSTIFY
+    styles["BodyText"].leading = 14
+    styles["BodyText"].spaceAfter = 4
+
     story = []
     for bloco in md.split("\n\n"):
         bloco = bloco.strip()
@@ -350,11 +390,33 @@ def gerar_relatorio_pdf() -> None:
             story.append(Paragraph(bloco[2:], styles["Title"]))
         elif bloco.startswith("## "):
             story.append(Paragraph(bloco[3:], styles["Heading2"]))
+        elif re.match(r"^Figura(?: principal)?:", bloco):
+            match = re.search(r"`(outputs/figures/[^`]+)`", bloco)
+            if match:
+                fig_path = ROOT / match.group(1)
+                if fig_path.exists():
+                    img = Image(str(fig_path), width=14 * cm, height=8.5 * cm)
+                    story.append(Spacer(1, 4))
+                    story.append(img)
         else:
             html = bloco.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             html = html.replace("\n", "<br/>")
             story.append(Paragraph(html, styles["BodyText"]))
         story.append(Spacer(1, 8))
+
+    top = 3.5 * cm
+    bottom = 2.8 * cm
+    left = right = 2.0 * cm
+    doc = BaseDocTemplate(
+        str(REPORT_DIR / "relatorio_pca_mds_anp.pdf"),
+        pagesize=A4,
+        topMargin=top,
+        bottomMargin=bottom,
+        leftMargin=left,
+        rightMargin=right,
+    )
+    frame = Frame(left, bottom, A4[0] - left - right, A4[1] - top - bottom, id="main")
+    doc.addPageTemplates([PageTemplate(id="main", frames=frame, onPage=_cabecalho_rodape)])
     doc.build(story)
 
 
@@ -448,51 +510,96 @@ def gerar_roteiro_slides_md(ctx: dict) -> None:
     )
     roteiro = f"""# Roteiro da apresentação: PCA e MDS em dados da ANP
 
+---
+
 ## Slide 1: Abertura
 
-Começar situando o tema. O trabalho usa dados públicos da ANP para observar preço da gasolina C, volume vendido de gasolina C e participação do etanol hidratado nos estados brasileiros.
+**Conteúdo visível no slide:**
+- Título: PCA e MDS em dados da ANP
+- Subtítulo: Gasolina C, etanol hidratado, preços e volumes por UF
+
+Começar situando o tema. O trabalho usa dados públicos da ANP para observar o preço da gasolina C, o volume vendido de gasolina C e a participação do etanol hidratado nos estados brasileiros ao longo do período {ctx["periodo"]}.
+
+---
 
 ## Slide 2: Problema investigado
+
+**Conteúdo visível no slide:**
+- Entender associações entre preço da gasolina C, volume vendido e participação do etanol.
+- Apoiar decisões de estoque, mix comercial, campanhas e metas regionais.
+- Tratar a análise como exploração visual e estatística, sem inferir causalidade direta.
 
 Explicar o cenário da rede de postos ou distribuidora. A gestão precisa tomar decisões de estoque, mix de produtos, campanhas e metas regionais, mas olhar apenas o faturamento agregado não mostra se a mudança de volume veio de preço, substituição por etanol ou diferença regional.
 
 Fala sugerida: "Nossa pergunta principal foi entender em quais estados e períodos o preço da gasolina C se relaciona com o volume vendido e com a presença do etanol."
 
+---
+
 ## Slide 3: Dataset e preparação
+
+**Conteúdo visível no slide:**
+- Recorte: {ctx["periodo"]}, {ctx["ufs"]} UFs e {ctx["n_registros"]} registros UF-mês.
+- Fontes: série histórica mensal de preços e vendas mensais de derivados e etanol da ANP.
+- Features padronizadas com StandardScaler para equilibrar escalas diferentes.
 
 Apresentar as duas bases:
 
 - Série histórica mensal de preços por estado.
 - Vendas mensais de derivados de petróleo e etanol por UF.
 
-O recorte usado foi de {ctx["periodo"]}, com {ctx["ufs"]} UFs e {ctx["n_registros"]} registros (join mês + sigla `uf`; regiões como Centro-Oeste deixaram de causar falha no merge). Cada linha é um mês em uma UF. Features numéricas receberam `StandardScaler`.
+O join foi feito por mês e sigla `uf`. Regiões como Centro-Oeste deixaram de causar falha no merge por grafia diferente entre as bases. Cada linha é um mês em uma UF. Features numéricas receberam `StandardScaler`.
+
+---
 
 ## Slide 4: PCA
 
+**Conteúdo visível no slide:**
+- PC1 explicou {ctx["variancia_pc1"]:.1%} e PC2 explicou {ctx["variancia_pc2"]:.1%}.
+- Variância acumulada dos dois primeiros componentes: {ctx["variancia_total"]:.1%}.
+- Principais influências em PC1: {", ".join(ctx["pc1_top"])}.
+- Principais influências em PC2: {", ".join(ctx["pc2_top"])}.
+- **Imagem:** gráfico de dispersão PCA 2D com pontos coloridos por região (outputs/figures/pca_2d_regiao.png).
+
 Explicar que o PCA transforma as variáveis originais em componentes principais. Os dois primeiros componentes explicaram {ctx["variancia_total"]:.1%} da variância total.
-
-Destacar:
-
-- PC1 explicou {ctx["variancia_pc1"]:.1%}.
-- PC2 explicou {ctx["variancia_pc2"]:.1%}.
-- PC1 foi mais influenciado por {", ".join(ctx["pc1_top"])}.
-- PC2 foi mais influenciado por {", ".join(ctx["pc2_top"])}.
 
 Fala sugerida: "O primeiro eixo ficou ligado principalmente à composição do consumo e ao peso do etanol. O segundo eixo capturou mais as oscilações mensais de preço e volume."
 
+---
+
 ## Slide 5: MDS
 
-Explicar que o MDS posiciona registros semelhantes próximos entre si, usando distâncias no espaço padronizado. O stress encontrado foi {ctx["stress_mds"]:.2f}, então o gráfico deve ser lido como apoio visual, não como prova exata de causalidade.
+**Conteúdo visível no slide:**
+- Representa proximidades entre registros usando distâncias no espaço padronizado.
+- Stress do MDS: {ctx["stress_mds"]:.2f}.
+- Registros próximos indicam comportamento semelhante de preço, volume e participação do etanol.
+- **Imagem:** gráfico de dispersão MDS 2D com pontos coloridos por região (outputs/figures/mds_2d_regiao.png).
+
+Explicar que o MDS posiciona registros semelhantes próximos entre si, usando distâncias no espaço padronizado. O stress encontrado foi {ctx["stress_mds"]:.2f}; o gráfico deve ser lido como apoio visual, não como prova exata de causalidade.
 
 Fala sugerida: "No MDS, o interesse é ver quem ficou perto de quem. Se dois registros aparecem próximos, eles têm perfis parecidos considerando preço, volume, participação do etanol e variações mensais."
 
+---
+
 ## Slide 6: Padrões e outliers
+
+**Conteúdo visível no slide:**
+- Estados com maior participação do etanol aparecem mais afastados dos mercados dependentes de gasolina.
+- Outliers combinam grande volume, participação elevada do etanol ou variações mensais fortes.
+- Os padrões observados fazem sentido para a hipótese de diferenças regionais de substituição.
+- **Imagem:** gráfico de barras com os registros mais afastados na projeção PCA (outputs/figures/outliers_pca.png).
 
 Comentar que os estados com maior participação média do etanol no recorte foram {maior_etanol_txt}. São Paulo apareceu com destaque entre os outliers porque combina escala muito alta de vendas e participação forte do etanol.
 
 Fala sugerida: "O ponto atípico não significa erro. Nesse caso, ele mostra que São Paulo tem um comportamento muito diferente em escala e composição do consumo."
 
+---
+
 ## Slide 7: Comparação e conclusão
+
+**Conteúdo visível no slide:**
+- PCA explica a contribuição das variáveis e pode apoiar redução de features.
+- MDS é mais adequado para visualização de similaridade e leitura de vizinhanças.
+- Os métodos ajudaram a mapear grupos, tendências e registros atípicos úteis para decisões regionais.
 
 Fechar comparando os métodos:
 

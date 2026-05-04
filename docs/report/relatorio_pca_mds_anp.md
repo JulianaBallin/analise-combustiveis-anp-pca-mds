@@ -59,6 +59,10 @@ As variáveis que mais influenciaram PC1 foram: participacao_etanol, razao_etano
 
 Isso indica que a primeira dimensão separou principalmente estados e meses pelo porte e composição do consumo, enquanto a segunda dimensão destacou mudanças relativas de preço, volume e competitividade do etanol.
 
+Figura: `outputs/figures/pca_variancia_explicada.png`.
+
+Figura: `outputs/figures/pca_cargas_componentes.png`.
+
 Figura principal: `outputs/figures/pca_2d_regiao.png`.
 
 ## 8. MDS 2D e interpretação das proximidades
@@ -95,6 +99,8 @@ Os principais registros afastados no PCA foram:
 - SP em 10/2025: gasolina R$ 6.05, participação do etanol 51.3%, variação de volume da gasolina 5.1%.
 
 Esses outliers são explicados principalmente por combinações de grande escala de volume, participação elevada do etanol, variações mensais fortes ou preço relativo do etanol muito diferente do padrão nacional.
+
+Figura: `outputs/figures/outliers_pca.png`.
 
 ## 12. Riscos de interpretação
 
