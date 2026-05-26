@@ -1,0 +1,610 @@
+% ==============================================================================
+% Relatorio AutoML v1.0 - Equipe 9
+% Universidade do Estado do Amazonas (UEA)
+% Disciplina: Ciencia de Dados
+% Equipe 9: FLAML e LightAutoML
+% ==============================================================================
+
+\documentclass[11pt, a4paper, oneside]{article}
+
+% ==============================================================================
+% Encoding e idioma
+% ==============================================================================
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+
+% ==============================================================================
+% Layout
+% ==============================================================================
+\usepackage{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{float}
+\usepackage{xurl}
+\usepackage{amsmath}
+
+% ==============================================================================
+% Graficos, cores e diagramas
+% ==============================================================================
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+% ==============================================================================
+% Tabelas e listas
+% ==============================================================================
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+
+% ==============================================================================
+% Caixas e codigo
+% ==============================================================================
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{hyperref}
+
+% ==============================================================================
+% Geometria da pagina
+% ==============================================================================
+\geometry{
+  a4paper,
+  top=25mm, bottom=25mm,
+  left=25mm, right=20mm,
+  headheight=50mm, headsep=6mm,
+  footskip=12mm
+}
+
+\graphicspath{{./}{../../diagrams/}}
+\setlength{\emergencystretch}{3em}
+\setlength{\hfuzz}{2pt}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\setlength{\tabcolsep}{4pt}
+\Urlmuskip=0mu plus 2mu\relax
+
+% ==============================================================================
+% Cores (identidade UEA)
+% ==============================================================================
+\definecolor{ueagreen}{RGB}{26, 92, 42}
+\definecolor{ueamint}{RGB}{74, 158, 107}
+\definecolor{ueagray}{RGB}{88, 88, 90}
+\definecolor{ueadark}{RGB}{30, 30, 30}
+\definecolor{uealight}{RGB}{240, 248, 243}
+\definecolor{tablehead}{RGB}{26, 92, 42}
+\definecolor{tableheadlight}{RGB}{220, 240, 228}
+\definecolor{tablealt}{RGB}{242, 250, 245}
+\definecolor{alertcolor}{RGB}{180, 100, 0}
+\definecolor{alertlight}{RGB}{255, 235, 210}
+\definecolor{infolight}{RGB}{235, 248, 242}
+
+% ==============================================================================
+% Hyperref
+% ==============================================================================
+\hypersetup{
+  colorlinks  = true,
+  linkcolor   = ueagreen,
+  urlcolor    = ueamint,
+  citecolor   = ueagray,
+  pdftitle    = {Relatorio AutoML v1.0 - Equipe 9 - UEA Ciencia de Dados},
+  pdfauthor   = {Ana Beatriz Maciel Nunes, Fernando Luiz Da Silva Freire, Juliana Ballin Lima},
+  pdfsubject  = {AutoML: FLAML e LightAutoML aplicados ao dataset ANP},
+  pdfkeywords = {AutoML, FLAML, LightAutoML, ANP, Combustiveis, Ciencia de Dados, UEA}
+}
+
+% ==============================================================================
+% Tipos de coluna
+% ==============================================================================
+\newcolumntype{J}[1]{>{\justifying\arraybackslash\small}p{#1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash\small}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash\small}p{#1}}
+\newcolumntype{Y}{>{\justifying\arraybackslash\small}X}
+\renewcommand{\arraystretch}{1.25}
+
+% ==============================================================================
+% Formatacao de secoes
+% ==============================================================================
+\titleformat{\section}[block]
+  {\Large\bfseries\color{ueagreen}}
+  {\thesection}{1em}{}
+  [\vspace{1pt}{\color{ueamint}\hrule height 1.5pt}\vspace{4pt}]
+
+\titleformat{\subsection}[block]
+  {\large\bfseries\color{ueagreen}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}[block]
+  {\normalsize\bfseries\color{ueagray}}
+  {\thesubsubsection}{1em}{}
+
+\titlespacing{\section}{0pt}{18pt}{6pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+\titlespacing{\subsubsection}{0pt}{8pt}{2pt}
+
+% ==============================================================================
+% Helpers de logo
+% ==============================================================================
+\newcommand{\uealogo}{%
+  \IfFileExists{uea-logo.png}{%
+    \raisebox{-3mm}{\includegraphics[height=14mm]{uea-logo.png}}%
+  }{\textbf{\color{ueagreen}UEA}}%
+}
+
+\newcommand{\projlogo}{%
+  \IfFileExists{../../diagrams/logo.png}{%
+    \includegraphics[height=12mm]{../../diagrams/logo.png}%
+  }{\textcolor{ueagreen}{\small\textbf{ANP}}}%
+}
+
+% ==============================================================================
+% Cabecalho e rodape
+% ==============================================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\uealogo}
+\fancyhead[C]{\textcolor{ueagray}{\small Ciência de Dados $\cdot$ AutoML}}
+\fancyhead[R]{\vspace{-2mm}\projlogo}
+\fancyfoot[L]{\textcolor{ueagray}{\small UEA $\cdot$ Equipe 9}}
+\fancyfoot[C]{\textcolor{ueagray}{\small\textbullet\quad\thepage\quad\textbullet}}
+\fancyfoot[R]{\textcolor{ueagray}{\small v1.0}}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{%
+  \hbox to\headwidth{\color{ueagreen}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0.3pt}
+\renewcommand{\footrule}{%
+  \hbox to\headwidth{\color{ueagray}\leaders\hrule height \footrulewidth\hfill}}
+
+% ==============================================================================
+% Caixas utilitarias
+% ==============================================================================
+\newtcolorbox{notebox}{
+  colback=alertlight,
+  colframe=alertcolor,
+  arc=2mm,
+  boxrule=1.5pt,
+  leftrule=4pt,
+  sharp corners,
+  breakable,
+  enhanced
+}
+
+\newtcolorbox{infobox}{
+  colback=infolight,
+  colframe=ueamint,
+  arc=2mm,
+  boxrule=1.5pt,
+  leftrule=4pt,
+  sharp corners,
+  breakable,
+  enhanced
+}
+
+\newcommand{\thead}[1]{\cellcolor{tablehead}\color{white}\small\bfseries\shortstack[c]{#1}}
+\newcommand{\taltrow}{\rowcolor{tablealt}}
+
+% ==============================================================================
+\begin{document}
+% ==============================================================================
+
+% ==============================================================================
+% Capa
+% ==============================================================================
+\begin{titlepage}
+  \pagecolor{ueagreen}
+  \color{white}
+  \vspace*{3mm}
+
+  \begin{center}
+    \IfFileExists{uea-logo.png}{%
+      \begin{tikzpicture}
+        \clip[rounded corners=2.8mm] (0,0) rectangle (55.3mm,28mm);
+        \node[inner sep=0pt, anchor=south west] at (0,0)
+          {\includegraphics[height=28mm]{uea-logo.png}};
+      \end{tikzpicture}
+    }{%
+      {\fontsize{28}{34}\selectfont\textbf{UEA}}
+    }\\[4mm]
+    {\fontsize{13}{18}\selectfont Universidade do Estado do Amazonas}\\[2mm]
+    {\fontsize{12}{16}\selectfont Escola Superior de Tecnologia}
+  \end{center}
+
+  \vspace{10mm}
+  \noindent\textcolor{ueamint}{\rule{\textwidth}{1.5pt}}\\[5mm]
+  {\fontsize{22}{28}\selectfont\textbf{Comparação de Ferramentas AutoML}}\\[4mm]
+  {\fontsize{16}{22}\selectfont\textbf{FLAML e LightAutoML}}\\[4mm]
+  {\fontsize{13}{18}\selectfont Aplicadas ao Dataset de Combustíveis ANP}\\[3mm]
+  \noindent\textcolor{white}{\rule{\textwidth}{0.5pt}}
+
+  \vspace{10mm}
+
+  \begin{tabularx}{\textwidth}{@{}L{4cm} Y@{}}
+    \textbf{Disciplina:}  & Ciência de Dados \\[3mm]
+    \textbf{Equipe:}      & 9 \\[3mm]
+    \textbf{Ferramentas:} & FLAML e LightAutoML \\[3mm]
+    \textbf{Versão:}      & 1.0 \\[3mm]
+    \textbf{Data:}        & 26 de maio de 2026 \\[3mm]
+    \textbf{Integrantes:} & Ana Beatriz Maciel Nunes \\
+                          & Fernando Luiz Da Silva Freire \\
+                          & Juliana Ballin Lima \\
+  \end{tabularx}
+
+  \vfill
+
+  \begin{center}
+    \IfFileExists{../../diagrams/logo.png}{%
+      \includegraphics[height=30mm]{../../diagrams/logo.png}
+    }{}
+  \end{center}
+
+  \vspace{4mm}
+  \noindent\textcolor{ueamint}{\rule{\textwidth}{0.5pt}}\\[3mm]
+  \justifying
+  {\small Este relatório apresenta a Parte 1 (explicação teórica sobre AutoML) e a
+  Parte 2 (descrição do dataset utilizado), como primeira entrega da atividade de
+  comparação de ferramentas AutoML da disciplina de Ciência de Dados na UEA.}
+
+  \vspace{4mm}
+  {\small \textcopyright{} 2026 Equipe 9, Ciência de Dados, UEA. Uso acadêmico.}
+
+  \vspace{2mm}
+  {\small UEA $\cdot$ Equipe 9 $\bullet$ 2 $\bullet$ v1.0}
+\end{titlepage}
+
+\pagecolor{white}
+\color{ueadark}
+
+% ==============================================================================
+% Historico de versoes
+% ==============================================================================
+\thispagestyle{fancy}
+\section*{Histórico de Versões}
+\addcontentsline{toc}{section}{Histórico de Versões}
+
+\begin{tabularx}{\textwidth}{@{}L{1.8cm} L{2.8cm} L{4cm} Y@{}}
+  \toprule
+  \thead{Versão} & \thead{Data} & \thead{Autores} & \thead{Descrição} \\
+  \midrule
+  1.0 & 26/05/2026 & Equipe 9 & Criação inicial do relatório. Parte 1: explicação teórica sobre AutoML. Parte 2: descrição do dataset ANP utilizado na atividade. \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{6mm}
+
+\begin{infobox}
+\textbf{Organização dos relatórios da atividade:}
+\begin{itemize}[leftmargin=1.2cm, topsep=2pt, itemsep=2pt]
+  \item \textbf{v1.0} (este documento): Parte 1 - Explicação teórica sobre AutoML; Parte 2 - Descrição do dataset.
+  \item \textbf{v2.0} (próxima entrega): Parte 3 - Aplicação da primeira ferramenta AutoML (FLAML).
+  \item \textbf{v3.0} (entrega final): Parte 4 - Aplicação da segunda ferramenta (LightAutoML); Parte 5 - Reflexão e comparação.
+\end{itemize}
+\end{infobox}
+
+\newpage
+
+% ==============================================================================
+% Sumario
+% ==============================================================================
+\tableofcontents
+\newpage
+
+% ==============================================================================
+% SECAO 1 - Explicacao Teorica sobre AutoML
+% ==============================================================================
+\section{Explicação Teórica sobre AutoML}
+\label{sec:automl-teoria}
+
+\begin{infobox}
+Esta seção responde às questões teóricas solicitadas na atividade sobre AutoML, com
+base nos slides disponibilizados na nota da disciplina
+(\url{https://classroom.google.com/u/1/c/NzkzOTU2MDI1NjE4}) e com base em
+pesquisa bibliográfica e compreensão conceitual da equipe.
+\end{infobox}
+
+% ------------------------------------------------------------------------------
+\subsection{O que é AutoML?}
+\label{sec:o-que-e-automl}
+% ------------------------------------------------------------------------------
+
+AutoML (Automated Machine Learning) é o conjunto de técnicas, ferramentas e processos
+que automatizam etapas repetitivas e técnicas do ciclo de desenvolvimento de modelos
+de Machine Learning. O objetivo central é reduzir o esforço manual necessário para
+construir pipelines de ML de qualidade, desde a preparação dos dados até a seleção e
+otimização do modelo final.
+
+Diferentemente da abordagem tradicional, em que o cientista de dados realiza
+manualmente cada escolha do pipeline, como a seleção do algoritmo, o ajuste de
+hiperparâmetros e a engenharia de atributos, o AutoML executa essas etapas de forma
+sistemática e automatizada. Isso é possível graças a técnicas como busca em espaço de
+hiperparâmetros, otimização bayesiana, meta-aprendizado e avaliação cruzada automática.
+
+O AutoML surgiu como resposta à crescente demanda por aplicações de ML em diferentes
+domínios e à escassez de especialistas com domínio técnico profundo. Ferramentas como
+FLAML, LightAutoML, AutoGluon, H2O AutoML e PyCaret representam implementações
+práticas desse conceito, cada uma com diferentes abordagens e focos.
+
+% ------------------------------------------------------------------------------
+\subsection{Etapas de ML que podem ser automatizadas}
+\label{sec:etapas-automatizadas}
+% ------------------------------------------------------------------------------
+
+Diversas etapas do ciclo de Machine Learning podem ser total ou parcialmente
+automatizadas por ferramentas AutoML:
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=4pt]
+  \item \textbf{Pré-processamento de dados:} imputação de valores ausentes, normalização e padronização de variáveis numéricas, codificação de variáveis categóricas (one-hot, label encoding) e detecção de tipos de dados.
+  \item \textbf{Engenharia de atributos:} criação e transformação de features, seleção automática de atributos relevantes e redução de dimensionalidade.
+  \item \textbf{Seleção de algoritmos:} comparação automática entre múltiplos algoritmos de ML (regressão linear, árvores de decisão, gradient boosting, redes neurais, entre outros).
+  \item \textbf{Ajuste de hiperparâmetros:} busca automática das melhores configurações de cada modelo por meio de grid search, random search ou otimização bayesiana.
+  \item \textbf{Avaliação e validação:} aplicação automática de validação cruzada (cross-validation), cálculo de métricas de desempenho e seleção do melhor modelo com base nos resultados.
+  \item \textbf{Ensemble de modelos:} combinação automática de múltiplos modelos para melhorar o desempenho final (stacking, bagging, blending).
+  \item \textbf{Geração de relatórios:} criação automática de resumos com métricas, importância de atributos e leaderboards comparativos.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{Etapas que ainda dependem da análise humana}
+\label{sec:etapas-humanas}
+% ------------------------------------------------------------------------------
+
+Apesar do alto grau de automação, várias etapas do processo de ML ainda dependem
+fundamentalmente da análise e julgamento humanos:
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=4pt]
+  \item \textbf{Definição do problema:} identificar qual pergunta se quer responder, qual é a variável-alvo e que tipo de problema se trata (classificação, regressão, clustering).
+  \item \textbf{Coleta e curadoria de dados:} obter, limpar e organizar os dados de forma adequada ao problema. A qualidade dos dados é responsabilidade humana.
+  \item \textbf{Definição de métricas de avaliação:} escolher a métrica mais adequada ao contexto do negócio ou da pesquisa. Por exemplo, em problemas médicos, recall pode ser mais importante que precisão.
+  \item \textbf{Interpretação dos resultados no contexto do domínio:} entender o significado prático das previsões do modelo e validar se fazem sentido no contexto real.
+  \item \textbf{Avaliação ética e de vieses:} identificar e mitigar vieses presentes nos dados ou nos modelos, especialmente quando o modelo toma decisões que afetam pessoas.
+  \item \textbf{Validação com especialistas do domínio:} verificar se os resultados são coerentes com o conhecimento especializado da área (saúde, finanças, engenharia, entre outras).
+  \item \textbf{Implantação e monitoramento em produção:} decidir como integrar o modelo ao sistema real e como monitorar seu desempenho ao longo do tempo.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{Principais vantagens do AutoML}
+\label{sec:vantagens}
+% ------------------------------------------------------------------------------
+
+O uso de ferramentas AutoML traz diversas vantagens práticas e estratégicas:
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=4pt]
+  \item \textbf{Redução do tempo de desenvolvimento:} o processo que levaria dias ou semanas de experimentação manual pode ser realizado em horas.
+  \item \textbf{Democratização do ML:} permite que analistas, pesquisadores e profissionais de outras áreas utilizem técnicas avançadas de ML sem precisar dominar todos os aspectos matemáticos e computacionais.
+  \item \textbf{Exploração sistemática do espaço de modelos:} o AutoML explora combinações de algoritmos e hiperparâmetros de forma mais abrangente do que um humano poderia fazer manualmente.
+  \item \textbf{Reprodutibilidade:} o processo automatizado garante que os experimentos possam ser replicados com os mesmos resultados.
+  \item \textbf{Redução de erros humanos:} evita descuidos comuns na configuração manual de pipelines, como vazamento de dados (data leakage) e comparação inadequada de modelos.
+  \item \textbf{Baseline rápido:} permite obter um modelo de referência (baseline) de qualidade rapidamente, antes de partir para ajustes manuais mais finos.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{Riscos e limitações do AutoML}
+\label{sec:riscos}
+% ------------------------------------------------------------------------------
+
+O AutoML não é uma solução universal e apresenta riscos e limitações importantes que
+devem ser considerados:
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=4pt]
+  \item \textbf{Interpretabilidade reduzida:} os modelos gerados automaticamente, especialmente ensembles complexos, podem ser difíceis de interpretar e explicar para stakeholders não técnicos.
+  \item \textbf{Alto custo computacional:} a busca automática por melhores modelos pode demandar muito tempo e recursos computacionais, especialmente em datasets grandes.
+  \item \textbf{Risco de overfitting:} sem uma configuração adequada da validação, os modelos podem se ajustar excessivamente aos dados de treino e não generalizar bem.
+  \item \textbf{Dependência da qualidade dos dados:} o AutoML não corrige problemas fundamentais nos dados de entrada. Um dataset com vieses ou erros produzirá modelos ruins independentemente da ferramenta utilizada.
+  \item \textbf{Caixa-preta:} a automação pode obscurecer as escolhas feitas pelo sistema, dificultando o diagnóstico de problemas.
+  \item \textbf{Limitações no domínio do problema:} nem sempre o AutoML encontra o melhor modelo para problemas muito específicos, que exigem conhecimento profundo do domínio para criar features relevantes.
+\end{itemize}
+
+% ------------------------------------------------------------------------------
+\subsection{AutoML substitui o cientista de dados?}
+\label{sec:substitui}
+% ------------------------------------------------------------------------------
+
+\textbf{Não.} O AutoML é uma ferramenta que potencializa o trabalho do cientista de
+dados, mas não o substitui. As razões são diversas:
+
+Em primeiro lugar, o AutoML automatiza tarefas técnicas e repetitivas, mas não é
+capaz de definir o problema correto, compreender o contexto do negócio, avaliar a
+qualidade e relevância dos dados nem interpretar os resultados à luz do conhecimento
+especializado do domínio. Essas são competências essencialmente humanas.
+
+Em segundo lugar, o uso irresponsável de AutoML sem compreensão do processo pode
+levar a modelos tendenciosos, com vazamento de dados ou com métricas infladas que
+não refletem o desempenho real. Somente um profissional com formação em Ciência de
+Dados pode identificar e corrigir esses problemas.
+
+Em terceiro lugar, a implantação de modelos em produção, o monitoramento de desvios
+ao longo do tempo (concept drift) e as decisões éticas sobre uso de algoritmos em
+contextos sensíveis exigem julgamento humano, responsabilidade e conhecimento
+especializado que nenhuma ferramenta automatizada possui.
+
+\begin{infobox}
+\textbf{Conclusão:} AutoML é um acelerador poderoso no toolkit do cientista de dados.
+Ele elimina parte do trabalho repetitivo, permite explorar mais alternativas em menos
+tempo e facilita a construção de baselines rápidos. Mas o papel do cientista de dados
+permanece insubstituível nas etapas que exigem julgamento, contexto e responsabilidade.
+\end{infobox}
+
+\newpage
+
+% ==============================================================================
+% SECAO 2 - Descricao do Dataset
+% ==============================================================================
+\section{Descrição do Dataset}
+\label{sec:dataset}
+
+% ------------------------------------------------------------------------------
+\subsection{Identificação e Fonte}
+\label{sec:dataset-fonte}
+% ------------------------------------------------------------------------------
+
+\begin{tabularx}{\textwidth}{@{}L{4.5cm} Y@{}}
+  \toprule
+  \textbf{Campo} & \textbf{Informação} \\
+  \midrule
+  \taltrow \textbf{Nome} & Dataset ANP - Análise de Preços e Volumes de Combustíveis (2021-2025) \\
+  \textbf{Fonte} & Agência Nacional do Petróleo, Gás Natural e Biocombustíveis (ANP), bases públicas: Série Histórica do Levantamento de Preços e Vendas de Derivados de Petróleo e Biocombustíveis \\
+  \taltrow \textbf{Disponibilidade} & Público, disponibilizado pela ANP no portal de dados abertos \\
+  \textbf{Periodo} & Janeiro de 2021 a dezembro de 2025 \\
+  \taltrow \textbf{Granularidade} & Mensal por Unidade Federativa (UF) \\
+  \textbf{Arquivo processado} & \texttt{data/processed/dataset\_anp\_pca\_mds\_2021\_2025.csv} \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{6mm}
+
+O dataset foi construído a partir do cruzamento entre duas bases públicas da ANP: a
+série histórica de preços médios de revenda de combustíveis e os registros de volume
+vendido (em m³) de derivados de petróleo e biocombustíveis. O merge foi realizado por
+mês e sigla de UF, garantindo a inclusão de todas as 27 unidades federativas,
+inclusive as da região Centro-Oeste, que apresentavam inconsistências nos nomes entre
+as duas fontes originais.
+
+% ------------------------------------------------------------------------------
+\subsection{Estrutura dos Dados}
+\label{sec:dataset-estrutura}
+% ------------------------------------------------------------------------------
+
+\begin{tabularx}{\textwidth}{@{}L{5.5cm} L{2.5cm} Y@{}}
+  \toprule
+  \thead{Atributo} & \thead{Tipo} & \thead{Descrição} \\
+  \midrule
+  \taltrow \texttt{mes\_ano} & Data & Mês e ano de referência da observação (formato YYYY-MM-01) \\
+  \texttt{uf} & Categórico & Sigla da Unidade Federativa (ex.: AM, SP, RJ) \\
+  \taltrow \texttt{uf\_nome} & Categórico & Nome completo da UF (ex.: AMAZONAS) \\
+  \texttt{regiao} & Categórico & Região geográfica do Brasil (NORTE, NORDESTE, etc.) \\
+  \taltrow \texttt{ano} & Numérico & Ano de referência (2021 a 2025) \\
+  \texttt{mes} & Numérico & Mês de referência (1 a 12) \\
+  \taltrow \texttt{preco\_medio\_gasolina\_c} & Numérico & Preço médio mensal de revenda da gasolina C (R\$/litro) \\
+  \texttt{preco\_medio\_etanol\_hidratado} & Numérico & Preço médio mensal de revenda do etanol hidratado (R\$/litro) \\
+  \taltrow \texttt{volume\_gasolina\_c\_m3} & Numérico & Volume vendido de gasolina C no mês (em m³) \\
+  \texttt{volume\_etanol\_hidratado\_m3} & Numérico & Volume vendido de etanol hidratado no mês (em m³) \\
+  \taltrow \texttt{volume\_total\_analisado\_m3} & Numérico & Soma dos volumes de gasolina C e etanol hidratado (em m³) \\
+  \texttt{participacao\_etanol} & Numérico & Proporção do etanol no volume total analisado \\
+  \taltrow \texttt{razao\_etanol\_gasolina} & Numérico & Razão entre volume de etanol e volume de gasolina C \\
+  \texttt{preco\_relativo\_etanol\_gasolina} & Numérico & Razão entre preço do etanol e preço da gasolina C \\
+  \taltrow \texttt{variacao\_preco\_gasolina\_c} & Numérico & Variação percentual mensal do preço da gasolina C \\
+  \texttt{variacao\_volume\_gasolina\_c} & Numérico & Variação percentual mensal do volume vendido de gasolina C \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{4mm}
+
+\begin{infobox}
+\textbf{Dimensões do dataset:} 1.619 registros (observações UF-mês) e 16 atributos.
+O dataset cobre os 27 estados brasileiros ao longo de 60 meses (jan/2021 a dez/2025),
+resultando em uma cobertura praticamente completa do período analisado.
+\end{infobox}
+
+% ------------------------------------------------------------------------------
+\subsection{Variável-Alvo}
+\label{sec:dataset-target}
+% ------------------------------------------------------------------------------
+
+Para a atividade de AutoML, a variável-alvo escolhida é:
+
+\begin{center}
+  \begin{tcolorbox}[
+    colback=tableheadlight,
+    colframe=ueagreen,
+    arc=2mm,
+    boxrule=1.5pt,
+    leftrule=4pt,
+    width=0.85\textwidth,
+    enhanced
+  ]
+    \centering
+    \textbf{\large \texttt{preco\_medio\_gasolina\_c}}\\[2mm]
+    \small Preço médio mensal de revenda da gasolina C, em R\$/litro,\\
+    registrado por UF e mês de referência.
+  \end{tcolorbox}
+\end{center}
+
+\vspace{4mm}
+
+A variável \texttt{preco\_medio\_gasolina\_c} representa o preço médio de revenda da
+gasolina C praticado em cada unidade federativa ao longo do tempo. Trata-se de uma
+variável contínua, com valores que variam de aproximadamente R\$ 4,50 a R\$ 8,00
+no período analisado, refletindo oscilações do mercado, variações regionais e efeitos
+de políticas de combustíveis adotadas ao longo dos anos 2021 a 2025.
+
+% ------------------------------------------------------------------------------
+\subsection{Tipo de Problema}
+\label{sec:dataset-tipo}
+% ------------------------------------------------------------------------------
+
+\textbf{Regressão.} O objetivo é prever o valor contínuo do preço médio da gasolina C
+com base nos demais atributos disponíveis, como preço do etanol, volumes vendidos,
+variações percentuais, participação do etanol no mercado, região geográfica e período
+temporal. As ferramentas AutoML serão configuradas para este tipo de problema e
+avaliadas pela métrica RMSE (Root Mean Squared Error) e pelo coeficiente de
+determinação R².
+
+% ------------------------------------------------------------------------------
+\subsection{Justificativa para a Escolha do Dataset}
+\label{sec:dataset-justificativa}
+% ------------------------------------------------------------------------------
+
+A equipe optou por utilizar o dataset já desenvolvido no projeto de Análise de
+Combustíveis ANP com PCA e MDS pelos seguintes motivos:
+
+\begin{enumerate}[leftmargin=1.5cm, itemsep=4pt]
+  \item \textbf{Continuidade e integração:} o dataset está diretamente relacionado ao trabalho anterior da equipe nesta disciplina, permitindo uma análise mais rica e comparativa entre as técnicas não supervisionadas (PCA e MDS) e as técnicas supervisionadas via AutoML.
+  \item \textbf{Relevância prática:} o preço dos combustíveis é um problema de interesse econômico real, com impacto direto no cotidiano da população e nas decisões de gestão de frotas, distribuição e políticas públicas.
+  \item \textbf{Características adequadas para AutoML:} o dataset possui atributos numéricos e categóricos, tamanho moderado (1.619 registros), sem valores ausentes, e uma variável-alvo contínua bem definida, o que o torna adequado para um problema de regressão com AutoML.
+  \item \textbf{Diversidade regional:} a presença de dados de todos os estados brasileiros e cinco regiões geográficas enriquece o problema de previsão com variações espaciais relevantes.
+\end{enumerate}
+
+% ------------------------------------------------------------------------------
+\subsection{Qualidade dos Dados}
+\label{sec:dataset-qualidade}
+% ------------------------------------------------------------------------------
+
+\begin{tabularx}{\textwidth}{@{}L{5.5cm} Y@{}}
+  \toprule
+  \thead{Aspecto} & \thead{Situação} \\
+  \midrule
+  \taltrow \textbf{Valores ausentes} & Nenhum. O dataset foi tratado antes da disponibilização, com remoção de registros incompletos e preenchimento via agregação mensal por UF. \\
+  \textbf{Atributos categóricos} & Presentes: \texttt{uf} (27 categorias), \texttt{uf\_nome} (27 categorias), \texttt{regiao} (5 categorias). As ferramentas AutoML realizarão a codificação automaticamente. \\
+  \taltrow \textbf{Dados desbalanceados} & Não aplicável ao problema de regressão. Todos os estados têm distribuição temporal aproximadamente uniforme (60 meses cada). \\
+  \textbf{Escala das variáveis} & As variáveis numéricas possuem escalas distintas (preços em R\$/litro, volumes em m³, proporções de 0 a 1). A padronização será realizada automaticamente pelas ferramentas AutoML. \\
+  \taltrow \textbf{Outliers} & São Paulo apresenta volumes de vendas significativamente maiores que os demais estados, caracterizando um outlier por escala. Essa característica já foi identificada na análise exploratória com PCA realizada anteriormente pela equipe. \\
+  \textbf{Período temporal} & O dataset cobre jan/2021 a dez/2025. A variável temporal (\texttt{mes\_ano}) é tratada como atributo numérico (ano e mês separados) para compatibilidade com os algoritmos AutoML. \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{6mm}
+
+\begin{notebox}
+\textbf{Divisão treino e teste:} para manter comparabilidade entre as ferramentas
+AutoML (FLAML e LightAutoML), será utilizada a mesma divisão para ambas: 80\% dos
+registros para treino e 20\% para teste, com seleção aleatória estratificada por
+região geográfica. A mesma semente aleatória (random state = 42) será aplicada em
+ambas as ferramentas.
+\end{notebox}
+
+% ==============================================================================
+% Referencias
+% ==============================================================================
+\newpage
+\section*{Referências}
+\addcontentsline{toc}{section}{Referências}
+
+\begin{itemize}[leftmargin=1.5cm, itemsep=4pt]
+  \item ANP. \textit{Série histórica do levantamento de preços de combustíveis}. Agência Nacional do Petróleo, Gás Natural e Biocombustíveis. Disponível em: \url{https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/serie-historica-do-levantamento-de-precos}
+  \item ANP. \textit{Vendas de derivados de petróleo e biocombustíveis por UF}. Disponível em: \url{https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/vendas-de-derivados-de-petroleo-e-biocombustiveis}
+  \item HUTTER, F.; KOTTHOFF, L.; VANSCHOREN, J. (eds.). \textit{Automated Machine Learning: Methods, Systems, Challenges}. Springer, 2019.
+  \item LI, Y.; JIANG, T.; ZHANG, S. et al. \textit{FLAML: A Fast and Lightweight AutoML Library}. Proceedings of MLSys, 2021.
+  \item VAKHRUSHEV, A.; RYZHKOV, A.; RYABININ, M. et al. \textit{LightAutoML: AutoML Solution for a Large Financial Services Ecosystem}. arXiv:2109.01528, 2021.
+  \item SCIKIT-LEARN. \textit{Documentação oficial}. Disponível em: \url{https://scikit-learn.org}
+\end{itemize}
+
+\end{document}

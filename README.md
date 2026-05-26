@@ -9,6 +9,25 @@
 
 ---
 
+<h2 align="center">🤖 Atividade AutoML - Equipe 9</h2>
+
+<p align="center">
+  <img alt="FLAML" src="https://img.shields.io/badge/AutoML-FLAML-blue?style=for-the-badge">
+  <img alt="LightAutoML" src="https://img.shields.io/badge/AutoML-LightAutoML-green?style=for-the-badge">
+</p>
+
+Este projeto também é utilizado como base para a atividade de comparação de ferramentas AutoML da disciplina de Ciência de Dados na UEA. A equipe 9 aplica **FLAML** e **LightAutoML** sobre o mesmo dataset de combustíveis ANP, comparando desempenho, facilidade de uso e interpretabilidade.
+
+### Relatórios da Atividade AutoML
+
+| Versão | Conteúdo | Arquivos |
+|---|---|---|
+| **v1.0** | Parte 1: Explicação teórica sobre AutoML; Parte 2: Descrição do dataset | `docs/relatorios/v1.0/relatorio_auto_ml_equipe9_v01.0.tex` e `.pdf` |
+| **v2.0** | Parte 3: Aplicação da primeira ferramenta AutoML (FLAML) | `docs/relatorios/v2.0/` (próxima entrega) |
+| **v3.0** | Parte 4: Aplicação da segunda ferramenta (LightAutoML); Parte 5: Reflexão e comparação | `docs/relatorios/v3.0/` (entrega final) |
+
+---
+
 <h2 align="center">📊 Tecnologias Utilizadas</h2>
 
 <p align="center">
@@ -181,7 +200,14 @@ analise-combustiveis-anp-pca-mds/
 │   ├── pca_analysis.py              # Aplicação e visualização do PCA
 │   └── mds_analysis.py              # Aplicação e visualização do MDS
 ├── docs/
-│   ├── report/                      # Relatório curto da atividade
+│   ├── relatorios/                  # Relatórios da atividade AutoML (Equipe 9)
+│   │   ├── v1.0/                    # v1.0: teoria AutoML e descrição do dataset
+│   │   │   ├── relatorio_auto_ml_equipe9_v01.0.tex
+│   │   │   ├── relatorio_auto_ml_equipe9_v01.0.pdf
+│   │   │   └── uea-logo.png
+│   │   ├── v2.0/                    # v2.0: aplicação FLAML (próxima entrega)
+│   │   └── v3.0/                    # v3.0: aplicação LightAutoML e reflexão
+│   ├── report/                      # Relatório da análise PCA e MDS
 │   ├── slides/                      # Apresentação oral do grupo
 │   └── diagrams/
 │       └── logo.svg                 # Logo do projeto
