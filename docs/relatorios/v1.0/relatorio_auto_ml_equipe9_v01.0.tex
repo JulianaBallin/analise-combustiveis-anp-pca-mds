@@ -138,7 +138,13 @@
 % ==============================================================================
 \newcommand{\uealogo}{%
   \IfFileExists{uea-logo.png}{%
-    \raisebox{-3mm}{\includegraphics[height=14mm]{uea-logo.png}}%
+    \raisebox{-5mm}{%
+      \begin{tikzpicture}
+        \clip[rounded corners=1.4mm] (0,0) rectangle (27.65mm,14mm);
+        \node[inner sep=0pt, anchor=south west] at (0,0)
+          {\includegraphics[height=14mm]{uea-logo.png}};
+      \end{tikzpicture}%
+    }%
   }{\textbf{\color{ueagreen}UEA}}%
 }
 
@@ -201,66 +207,80 @@
 % ==============================================================================
 % Capa
 % ==============================================================================
+\hypersetup{pageanchor=false}
+\newgeometry{
+  top=10mm, bottom=10mm,
+  left=25mm, right=20mm,
+  noheadfoot
+}
 \begin{titlepage}
+  \thispagestyle{empty}
   \pagecolor{ueagreen}
   \color{white}
-  \vspace*{3mm}
+  \vspace*{0mm}
 
   \begin{center}
     \IfFileExists{uea-logo.png}{%
       \begin{tikzpicture}
-        \clip[rounded corners=2.8mm] (0,0) rectangle (55.3mm,28mm);
+        \clip[rounded corners=2.4mm] (0,0) rectangle (47.4mm,24mm);
         \node[inner sep=0pt, anchor=south west] at (0,0)
-          {\includegraphics[height=28mm]{uea-logo.png}};
+          {\includegraphics[height=24mm]{uea-logo.png}};
       \end{tikzpicture}
     }{%
       {\fontsize{28}{34}\selectfont\textbf{UEA}}
-    }\\[4mm]
-    {\fontsize{13}{18}\selectfont Universidade do Estado do Amazonas}\\[2mm]
-    {\fontsize{12}{16}\selectfont Escola Superior de Tecnologia}
+    }\\[3mm]
+    {\fontsize{15}{19}\selectfont Universidade do Estado do Amazonas}\\[1mm]
+    {\fontsize{14}{18}\selectfont Escola Superior de Tecnologia}
   \end{center}
 
-  \vspace{10mm}
-  \noindent\textcolor{ueamint}{\rule{\textwidth}{1.5pt}}\\[5mm]
-  {\fontsize{22}{28}\selectfont\textbf{Comparação de Ferramentas AutoML}}\\[4mm]
-  {\fontsize{16}{22}\selectfont\textbf{FLAML e LightAutoML}}\\[4mm]
-  {\fontsize{13}{18}\selectfont Aplicadas ao Dataset de Combustíveis ANP}\\[3mm]
+  \vspace{7mm}
+  \noindent\textcolor{ueamint}{\rule{\textwidth}{1.5pt}}\\[4mm]
+  {\fontsize{21}{26}\selectfont\textbf{Comparação de Ferramentas AutoML}}\\[3mm]
+  {\fontsize{16}{21}\selectfont\textbf{FLAML e LightAutoML}}\\[3mm]
+  {\fontsize{13}{17}\selectfont Aplicadas ao Dataset de Combustíveis ANP}\\[2mm]
   \noindent\textcolor{white}{\rule{\textwidth}{0.5pt}}
 
-  \vspace{10mm}
+  \vspace{7mm}
 
   \begin{tabularx}{\textwidth}{@{}L{4cm} Y@{}}
-    \textbf{Disciplina:}  & Ciência de Dados \\[3mm]
-    \textbf{Equipe:}      & 9 \\[3mm]
-    \textbf{Ferramentas:} & FLAML e LightAutoML \\[3mm]
-    \textbf{Versão:}      & 1.0 \\[3mm]
-    \textbf{Data:}        & 26 de maio de 2026 \\[3mm]
+    \textbf{Disciplina:}  & Ciência de Dados \\[2mm]
+    \textbf{Equipe:}      & 9 \\[2mm]
+    \textbf{Ferramentas:} & FLAML e LightAutoML \\[2mm]
+    \textbf{Versão:}      & 1.0 \\[2mm]
+    \textbf{Data:}        & 26 de maio de 2026 \\[2mm]
     \textbf{Integrantes:} & Ana Beatriz Maciel Nunes \\
                           & Fernando Luiz Da Silva Freire \\
                           & Juliana Ballin Lima \\
   \end{tabularx}
 
-  \vfill
+  \vspace{8mm}
 
   \begin{center}
     \IfFileExists{../../diagrams/logo.png}{%
-      \includegraphics[height=30mm]{../../diagrams/logo.png}
+      \includegraphics[height=20mm]{../../diagrams/logo.png}
     }{}
   \end{center}
 
-  \vspace{4mm}
-  \noindent\textcolor{ueamint}{\rule{\textwidth}{0.5pt}}\\[3mm]
-  \justifying
+  \vspace{3mm}
+  \noindent\textcolor{ueamint}{\rule{\textwidth}{0.5pt}}\\[2mm]
+  \begin{center}
+  \begin{minipage}{0.92\textwidth}
+  \centering
   {\small Este relatório apresenta a Parte 1 (explicação teórica sobre AutoML) e a
   Parte 2 (descrição do dataset utilizado), como primeira entrega da atividade de
   comparação de ferramentas AutoML da disciplina de Ciência de Dados na UEA.}
+  \end{minipage}
 
-  \vspace{4mm}
+  \vspace{3mm}
   {\small \textcopyright{} 2026 Equipe 9, Ciência de Dados, UEA. Uso acadêmico.}
 
   \vspace{2mm}
   {\small UEA $\cdot$ Equipe 9 $\bullet$ 2 $\bullet$ v1.0}
+  \end{center}
 \end{titlepage}
+\restoregeometry
+\hypersetup{pageanchor=true}
+\setcounter{page}{1}
 
 \pagecolor{white}
 \color{ueadark}
