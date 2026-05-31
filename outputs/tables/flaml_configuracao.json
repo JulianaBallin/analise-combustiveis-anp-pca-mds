@@ -2,15 +2,15 @@
   "best_estimator": "lgbm",
   "best_config": {
     "n_estimators": 1294,
-    "num_leaves": 22,
-    "min_child_samples": 9,
-    "learning_rate": 0.01317914306760124,
-    "log_max_bin": 9,
-    "colsample_bytree": 0.5934246909053076,
-    "reg_alpha": 0.03352761119277088,
-    "reg_lambda": 0.05965156855614909
+    "num_leaves": 28,
+    "min_child_samples": 7,
+    "learning_rate": 0.023013311382879913,
+    "log_max_bin": 8,
+    "colsample_bytree": 0.5304272584481116,
+    "reg_alpha": 0.20613410147852623,
+    "reg_lambda": 5.241136465542804
   },
-  "best_loss": 0.1254968072607307,
+  "best_loss": 0.127674659697034,
   "estimator_list": [
     "lgbm",
     "rf",

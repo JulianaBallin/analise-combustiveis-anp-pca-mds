@@ -1,4 +1,4 @@
 estimador,melhor_loss_validacao_rmse,melhor_configuracao,selecionado_como_melhor
-lgbm,0.1254968072607307,"{""colsample_bytree"": 0.5934246909053076, ""learning_rate"": 0.01317914306760124, ""log_max_bin"": 9, ""min_child_samples"": 9, ""n_estimators"": 1294, ""num_leaves"": 22, ""reg_alpha"": 0.03352761119277088, ""reg_lambda"": 0.05965156855614909}",True
-extra_tree,0.12869837464871992,"{""max_features"": 0.8100273423683397, ""max_leaves"": 646, ""n_estimators"": 218}",False
+lgbm,0.127674659697034,"{""colsample_bytree"": 0.5304272584481116, ""learning_rate"": 0.023013311382879913, ""log_max_bin"": 8, ""min_child_samples"": 7, ""n_estimators"": 1294, ""num_leaves"": 28, ""reg_alpha"": 0.20613410147852623, ""reg_lambda"": 5.241136465542804}",True
+extra_tree,0.24585137637772428,"{""max_features"": 0.8955034148587695, ""max_leaves"": 29, ""n_estimators"": 9}",False
 rf,0.2501152156078834,"{""max_features"": 0.5651079297892542, ""max_leaves"": 30, ""n_estimators"": 5}",False
