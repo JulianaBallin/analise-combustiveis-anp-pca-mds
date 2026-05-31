@@ -23,8 +23,23 @@ Este projeto também é utilizado como base para a atividade de comparação de 
 | Versão | Conteúdo | Arquivos |
 |---|---|---|
 | **v1.0** | Parte 1: Explicação teórica sobre AutoML; Parte 2: Descrição do dataset | `docs/relatorios/v1.0/relatorio_auto_ml_equipe9_v01.0.tex` e `.pdf` |
-| **v2.0** | Parte 3: Aplicação da primeira ferramenta AutoML (FLAML) | `docs/relatorios/v2.0/` (próxima entrega) |
+| **v2.0** | Parte 3: Aplicação da primeira ferramenta AutoML (FLAML) | `docs/relatorios/v2.0/relatorio_auto_ml_equipe9_v02.0.tex` e `.pdf` |
 | **v3.0** | Parte 4: Aplicação da segunda ferramenta (LightAutoML); Parte 5: Reflexão e comparação | `docs/relatorios/v3.0/` (entrega final) |
+
+### Experimento FLAML
+
+O experimento da primeira ferramenta AutoML está implementado em `src/flaml_analysis.py`. Ele utiliza o dataset processado, remove colunas que causariam vazamento de dados, aplica a mesma divisão 80% treino e 20% teste estratificada por região, executa a FLAML com orçamento de 60 segundos e salva métricas, leaderboard, previsões e importância de atributos.
+
+Resultado do experimento FLAML no conjunto de teste:
+
+| Métrica | Valor |
+|---|---:|
+| Melhor estimador | `lgbm` |
+| RMSE | 0,1148 |
+| MAE | 0,0819 |
+| R² | 0,9693 |
+| MAPE | 1,3841% |
+| Tempo aproximado | 60,78 segundos |
 
 ---
 
@@ -198,22 +213,26 @@ analise-combustiveis-anp-pca-mds/
 ├── src/
 │   ├── data_preparation.py          # Funções de limpeza e preparação dos dados
 │   ├── pca_analysis.py              # Aplicação e visualização do PCA
-│   └── mds_analysis.py              # Aplicação e visualização do MDS
+│   ├── mds_analysis.py              # Aplicação e visualização do MDS
+│   └── flaml_analysis.py            # Aplicação da primeira ferramenta AutoML
 ├── docs/
 │   ├── relatorios/                  # Relatórios da atividade AutoML (Equipe 9)
 │   │   ├── v1.0/                    # v1.0: teoria AutoML e descrição do dataset
 │   │   │   ├── relatorio_auto_ml_equipe9_v01.0.tex
 │   │   │   ├── relatorio_auto_ml_equipe9_v01.0.pdf
 │   │   │   └── uea-logo.png
-│   │   ├── v2.0/                    # v2.0: aplicação FLAML (próxima entrega)
+│   │   ├── v2.0/                    # v2.0: aplicação FLAML
+│   │   │   ├── relatorio_auto_ml_equipe9_v02.0.tex
+│   │   │   ├── relatorio_auto_ml_equipe9_v02.0.pdf
+│   │   │   └── uea-logo.png
 │   │   └── v3.0/                    # v3.0: aplicação LightAutoML e reflexão
 │   ├── report/                      # Relatório da análise PCA e MDS
 │   ├── slides/                      # Apresentação oral do grupo
 │   └── diagrams/
 │       └── logo.svg                 # Logo do projeto
 ├── outputs/
-│   ├── figures/                     # Gráficos gerados
-│   └── tables/                      # Tabelas de resultados
+│   ├── figures/                     # Gráficos gerados por PCA, MDS e FLAML
+│   └── tables/                      # Tabelas de resultados por PCA, MDS e FLAML
 ├── requirements.txt
 └── README.md
 ````
@@ -243,7 +262,7 @@ source .venv/bin/activate        # Linux/Mac
 pip install -r requirements.txt
 ```
 
-### 4. Gerar todos os entregáveis
+### 4. Gerar os entregáveis de PCA e MDS
 
 ```bash
 python run_analysis.py
@@ -251,7 +270,15 @@ python run_analysis.py
 
 Esse comando baixa as bases oficiais da ANP, prepara o dataset (`merge` por **`mes_ano` + sigla `uf`**, sem depender do texto idêntico de `uf_nome` entre fontes; isso evitava perder **~240** linhas em DF, GO, MS e MT quando Centro-Oeste grafava diferente nas duas bases), executa PCA e MDS e gera tabelas, gráficos, relatório e slides. O MDS usa parâmetros alinhados ao **scikit-learn 1.7+** (`metric`, `dissimilarity`, `normalized_stress`).
 
-### 5. Executar o notebook
+### 5. Executar o experimento FLAML
+
+```bash
+python -m src.flaml_analysis
+```
+
+Esse comando utiliza `data/processed/dataset_anp_pca_mds_2021_2025.csv`, treina a FLAML para regressão do preço médio da gasolina C e gera os arquivos `outputs/tables/flaml_*` e `outputs/figures/flaml_*`.
+
+### 6. Executar o notebook
 
 ```bash
 jupyter notebook notebooks/analise_pca_mds_anp.ipynb
@@ -271,6 +298,8 @@ jupyter
 openpyxl
 python-pptx
 reportlab
+flaml
+lightgbm
 ```
 
 ---
@@ -286,6 +315,8 @@ reportlab
 | Gráficos | `outputs/figures/` |
 | Tabelas de apoio | `outputs/tables/` |
 | Slides | `docs/slides/apresentacao_pca_mds_anp.pdf` |
+| Relatório AutoML v1.0 | `docs/relatorios/v1.0/relatorio_auto_ml_equipe9_v01.0.tex` e `.pdf` |
+| Relatório AutoML v2.0 | `docs/relatorios/v2.0/relatorio_auto_ml_equipe9_v02.0.tex` e `.pdf` |
 
 Principais resultados do recorte 2021-2025 (27 UFs, 1619 registros UF-mês após o join corrigido mês+UF e alinhamento do PCA atual):
 

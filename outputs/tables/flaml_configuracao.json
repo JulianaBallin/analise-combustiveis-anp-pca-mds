@@ -1,0 +1,30 @@
+{
+  "best_estimator": "lgbm",
+  "best_config": {
+    "n_estimators": 1294,
+    "num_leaves": 22,
+    "min_child_samples": 9,
+    "learning_rate": 0.01317914306760124,
+    "log_max_bin": 9,
+    "colsample_bytree": 0.5934246909053076,
+    "reg_alpha": 0.03352761119277088,
+    "reg_lambda": 0.05965156855614909
+  },
+  "best_loss": 0.1254968072607307,
+  "estimator_list": [
+    "lgbm",
+    "rf",
+    "extra_tree"
+  ],
+  "time_budget_seconds": 60,
+  "random_state": 42,
+  "test_size": 0.2,
+  "target": "preco_medio_gasolina_c",
+  "removed_columns": [
+    "preco_medio_gasolina_c",
+    "mes_ano",
+    "uf_nome",
+    "variacao_preco_gasolina_c",
+    "preco_relativo_etanol_gasolina"
+  ]
+}
