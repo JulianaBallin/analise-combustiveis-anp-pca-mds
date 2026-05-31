@@ -1,5 +1,5 @@
 % ==============================================================================
-% Relatório AutoML v2.0 - Equipe 9
+% Relatório AutoML v4.2 - Equipe 9
 % Universidade do Estado do Amazonas (UEA)
 % Disciplina: Ciência de Dados
 % Equipe 9: FLAML e LightAutoML
@@ -98,7 +98,7 @@
   linkcolor   = ueagreen,
   urlcolor    = ueamint,
   citecolor   = ueagray,
-  pdftitle    = {Relatório AutoML v2.0 - Equipe 9 - UEA Ciência de Dados},
+  pdftitle    = {Relatório AutoML v4.2 - Equipe 9 - UEA Ciência de Dados},
   pdfauthor   = {Ana Beatriz Maciel Nunes, Fernando Luiz Da Silva Freire, Juliana Ballin Lima},
   pdfsubject  = {AutoML: FLAML e LightAutoML aplicados ao dataset ANP},
   pdfkeywords = {AutoML, FLAML, LightAutoML, ANP, Combustíveis, Ciência de Dados, UEA}
@@ -164,7 +164,7 @@
 \fancyhead[R]{\vspace{-2mm}\projlogo}
 \fancyfoot[L]{\textcolor{ueagray}{\small UEA $\cdot$ Equipe 9}}
 \fancyfoot[C]{\textcolor{ueagray}{\small\textbullet\quad\thepage\quad\textbullet}}
-\fancyfoot[R]{\textcolor{ueagray}{\small v2.0}}
+\fancyfoot[R]{\textcolor{ueagray}{\small v4.2}}
 \renewcommand{\headrulewidth}{0.6pt}
 \renewcommand{\headrule}{%
   \hbox to\headwidth{\color{ueagreen}\leaders\hrule height \headrulewidth\hfill}}
@@ -246,8 +246,8 @@
     \textbf{Disciplina:}  & Ciência de Dados \\[2mm]
     \textbf{Equipe:}      & 9 \\[2mm]
     \textbf{Ferramentas:} & FLAML e LightAutoML \\[2mm]
-    \textbf{Versão:}      & 2.0 \\[2mm]
-    \textbf{Data:}        & 26 de maio de 2026 \\[2mm]
+    \textbf{Versão:}      & 4.0 \\[2mm]
+    \textbf{Data:}        & 30 de maio de 2026 \\[2mm]
     \textbf{Integrantes:} & Ana Beatriz Maciel Nunes \\
                           & Fernando Luiz Da Silva Freire \\
                           & Juliana Ballin Lima \\
@@ -268,6 +268,7 @@
   \centering
   {\small Este relatório apresenta a Parte 1 (explicação teórica sobre AutoML), a
   Parte 2 (descrição do dataset utilizado) e a Parte 3 (aplicação prática da FLAML),
+  agora ampliada com baseline, análise de erros e discussão de validade experimental,
   como segunda entrega da atividade de comparação de ferramentas AutoML da disciplina
   de Ciência de Dados na UEA.}
   \end{minipage}
@@ -276,7 +277,7 @@
   {\small \textcopyright{} 2026 Equipe 9, Ciência de Dados, UEA. Uso acadêmico.}
 
   \vspace{2mm}
-  {\small UEA $\cdot$ Equipe 9 $\bullet$ v2.0}
+  {\small UEA $\cdot$ Equipe 9 $\bullet$ v4.2}
   \end{center}
   \vspace*{\fill}
 \end{titlepage}
@@ -300,6 +301,7 @@
   \midrule
   1.0 & 26/05/2026 & Equipe 9 & Criação inicial do relatório. Parte 1: explicação teórica sobre AutoML. Parte 2: descrição do dataset ANP utilizado na atividade. \\
   \taltrow 2.0 & 26/05/2026 & Equipe 9 & Complemento da segunda entrega. Parte 3: aplicação da primeira ferramenta AutoML, FLAML, ao problema de regressão do preço médio da gasolina C. \\
+  4.0 & 30/05/2026 & Equipe 9 & Ampliação da Parte 3 com comparação a baselines simples, análise de erros por região e discussão de validade experimental. \\
   \bottomrule
 \end{tabularx}
 
@@ -309,8 +311,8 @@
 \textbf{Organização dos relatórios da atividade:}
 \begin{itemize}[leftmargin=1.2cm, topsep=2pt, itemsep=2pt]
   \item \textbf{v1.0}: Parte 1 - Explicação teórica sobre AutoML; Parte 2 - Descrição do dataset.
-  \item \textbf{v2.0} (este documento): Parte 3 - Aplicação da primeira ferramenta AutoML (FLAML).
-  \item \textbf{v3.0} (entrega final): Parte 4 - Aplicação da segunda ferramenta (LightAutoML); Parte 5 - Reflexão e comparação.
+  \item \textbf{v2.0}: Parte 3 - Aplicação da primeira ferramenta AutoML (FLAML).
+  \item \textbf{v4.2} (este documento): Parte 3 - versão ampliada com baseline, análise de erros e discussão de validade.
 \end{itemize}
 \end{infobox}
 
@@ -627,18 +629,22 @@ ambas as ferramentas.
 % ------------------------------------------------------------------------------
 
 A primeira ferramenta aplicada foi a \textbf{FLAML} (Fast and Lightweight AutoML),
-biblioteca de AutoML desenvolvida para encontrar bons modelos com baixo custo
-computacional. A ferramenta automatiza a seleção de algoritmos, a busca de
-hiperparâmetros e a avaliação de candidatos dentro de um orçamento de tempo definido.
+uma biblioteca voltada à busca eficiente de bons modelos com baixo custo
+computacional. Seu diferencial está em explorar, de forma automática, candidatos de
+modelos e combinações de hiperparâmetros dentro de um orçamento de tempo definido,
+priorizando eficiência sem abrir mão de desempenho competitivo.
 
-No experimento da equipe, a FLAML foi utilizada para um problema de \textbf{regressão},
-com o objetivo de prever a variável \texttt{preco\_medio\_gasolina\_c}, que representa
-o preço médio mensal da gasolina C por UF.
+Neste experimento, a FLAML foi utilizada em uma tarefa de \textbf{regressão tabular},
+com o objetivo de prever a variável \texttt{preco\_medio\_gasolina\_c}. O problema é
+adequado a uma ferramenta AutoML porque envolve dados estruturados, mistura de
+atributos numéricos e categóricos, e relações potencialmente não lineares entre preço,
+volume, região e tempo.
 
 \begin{infobox}
 \textbf{Objetivo da Parte 3:} aplicar a primeira ferramenta AutoML atribuída à equipe,
-registrar o processo utilizado, apresentar os modelos avaliados automaticamente e
-interpretar o melhor resultado obtido no conjunto de teste.
+documentar o fluxo experimental, apresentar os modelos avaliados automaticamente,
+analisar o melhor resultado obtido e discutir, de forma crítica, os limites da
+aplicação.
 \end{infobox}
 
 % ------------------------------------------------------------------------------
@@ -646,9 +652,10 @@ interpretar o melhor resultado obtido no conjunto de teste.
 \label{sec:flaml-instalacao}
 % ------------------------------------------------------------------------------
 
-A execução foi feita em ambiente virtual Python local no próprio projeto. As
-dependências da primeira ferramenta AutoML foram adicionadas ao arquivo
-\texttt{requirements.txt}, incluindo \texttt{flaml} e \texttt{lightgbm}.
+A execução foi realizada em ambiente virtual Python local, no próprio projeto. As
+dependências necessárias foram registradas em \texttt{requirements.txt}, incluindo
+\texttt{flaml} e \texttt{lightgbm}, de modo a permitir reprodução do experimento em
+outro ambiente compatível.
 
 \begin{tabularx}{\textwidth}{@{}L{4.8cm} Y@{}}
   \toprule
@@ -665,8 +672,8 @@ dependências da primeira ferramenta AutoML foram adicionadas ao arquivo
 
 O script reprodutível do experimento foi implementado em
 \texttt{src/flaml\_analysis.py}. Ele carrega o dataset processado, aplica a mesma
-divisão treino e teste definida na Parte 2, treina a FLAML, salva métricas e gera
-gráficos de apoio.
+divisão treino e teste definida na Parte 2, treina a FLAML, registra as métricas e
+gera os gráficos de apoio utilizados na análise.
 
 % ------------------------------------------------------------------------------
 \subsection{Preparação para o experimento}
@@ -675,19 +682,19 @@ gráficos de apoio.
 
 O arquivo utilizado foi
 \texttt{data/processed/dataset\_anp\_pca\_mds\_2021\_2025.csv}, com 1.619 registros.
-A divisão usada foi de 80\% para treino e 20\% para teste, estratificada por região
-geográfica e com \texttt{random\_state = 42}. Isso gerou 1.295 registros de treino e
-324 registros de teste.
+A divisão usada foi de 80\% para treino e 20\% para teste, com
+\texttt{random\_state = 42}. Isso gerou 1.295 registros de treino e 324 registros de
+teste.
 
-Para evitar vazamento de dados, algumas colunas foram removidas da modelagem
-supervisionada:
+Para evitar vazamento de dados e manter a avaliação o mais honesta possível, algumas
+colunas foram removidas da modelagem supervisionada:
 
 \begin{itemize}[leftmargin=1.5cm, itemsep=4pt]
   \item \texttt{preco\_medio\_gasolina\_c}: variável-alvo.
-  \item \texttt{variacao\_preco\_gasolina\_c}: derivada do próprio preço da gasolina C.
-  \item \texttt{preco\_relativo\_etanol\_gasolina}: usa o preço da gasolina C no denominador.
-  \item \texttt{mes\_ano}: substituída pelas colunas numéricas \texttt{ano} e \texttt{mes}.
-  \item \texttt{uf\_nome}: informação duplicada da sigla \texttt{uf}.
+  \item \texttt{variacao\_preco\_gasolina\_c}: variável derivada diretamente do preço da gasolina C, o que poderia facilitar artificialmente a previsão.
+  \item \texttt{preco\_relativo\_etanol\_gasolina}: razão que usa o preço da gasolina C no denominador, criando dependência direta com o alvo.
+  \item \texttt{mes\_ano}: substituída por \texttt{ano} e \texttt{mes} para facilitar o tratamento numérico pelas ferramentas AutoML.
+  \item \texttt{uf\_nome}: removida por duplicar a informação já contida em \texttt{uf}.
 \end{itemize}
 
 As colunas categóricas \texttt{uf} e \texttt{regiao} foram codificadas por
@@ -702,12 +709,18 @@ As colunas categóricas \texttt{uf} e \texttt{regiao} foram codificadas por
   Variável-alvo & \texttt{preco\_medio\_gasolina\_c} \\
   \taltrow Métrica principal & RMSE \\
   Divisão dos dados & 80\% treino e 20\% teste \\
-  \taltrow Estratificação & Região geográfica \\
+  \taltrow Estratificação & Não aplicada na divisão final \\
   Semente aleatória & 42 \\
   \taltrow Orçamento de tempo & 60 segundos \\
   Estimadores avaliados & \texttt{lgbm}, \texttt{rf}, \texttt{extra\_tree} \\
   \bottomrule
 \end{tabularx}
+
+\vspace{4mm}
+
+A escolha por uma configuração enxuta foi intencional: a proposta desta etapa era
+avaliar a capacidade da FLAML de construir um bom baseline em pouco tempo, sem recorrer
+a um processo manual extenso de tuning.
 
 % ------------------------------------------------------------------------------
 \subsection{Principais comandos e etapas utilizadas}
@@ -719,13 +732,13 @@ As principais etapas executadas no script foram:
 \begin{enumerate}[leftmargin=1.5cm, itemsep=4pt]
   \item Carregamento do dataset processado da ANP.
   \item Separação da variável-alvo \texttt{preco\_medio\_gasolina\_c}.
-  \item Remoção de colunas que causariam vazamento de dados.
+  \item Remoção de colunas que poderiam causar vazamento de dados.
   \item Codificação das variáveis categóricas \texttt{uf} e \texttt{regiao}.
   \item Divisão treino e teste com 20\% dos registros no conjunto de teste.
-  \item Configuração da FLAML para tarefa de regressão, métrica RMSE e orçamento de 60 segundos.
+  \item Configuração da FLAML para regressão, métrica RMSE e orçamento de 60 segundos.
   \item Treinamento automático dos modelos candidatos.
   \item Avaliação do melhor modelo no conjunto de teste.
-  \item Geração de métricas, leaderboard, previsões e gráficos.
+  \item Geração de métricas, \textit{leaderboard}, previsões e gráficos.
 \end{enumerate}
 
 % ------------------------------------------------------------------------------
@@ -735,14 +748,14 @@ As principais etapas executadas no script foram:
 
 A FLAML avaliou três famílias de modelos dentro do orçamento definido. O melhor
 resultado de validação interna foi obtido pelo estimador \texttt{lgbm}, baseado em
-LightGBM.
+LightGBM, que conseguiu equilibrar erro baixo e uso eficiente do tempo disponível.
 
 \begin{tabularx}{\textwidth}{@{}L{3cm} C{4cm} C{3cm} Y@{}}
   \toprule
   \thead{Estimador} & \thead{RMSE de validação} & \thead{Selecionado} & \thead{Observação} \\
   \midrule
   \taltrow \texttt{lgbm} & 0,1255 & Sim & Melhor equilíbrio entre erro e tempo dentro do orçamento definido. \\
-  \texttt{extra\_tree} & 0,1287 & Não & Resultado próximo ao melhor modelo, usando árvores extremamente aleatórias. \\
+  \texttt{extra\_tree} & 0,1287 & Não & Resultado próximo ao melhor modelo, com desempenho competitivo. \\
   \taltrow \texttt{rf} & 0,2501 & Não & Desempenho inferior no orçamento de tempo disponível. \\
   \bottomrule
 \end{tabularx}
@@ -752,7 +765,8 @@ LightGBM.
 A melhor configuração encontrada para o \texttt{lgbm} utilizou, entre outros
 hiperparâmetros, \texttt{n\_estimators = 1294}, \texttt{num\_leaves = 22},
 \texttt{learning\_rate = 0,0132}, \texttt{min\_child\_samples = 9} e
-\texttt{colsample\_bytree = 0,5934}.
+\texttt{colsample\_bytree = 0,5934}. Esses valores indicam um modelo relativamente
+flexível, mas ainda controlado o suficiente para reduzir risco de overfitting.
 
 % ------------------------------------------------------------------------------
 \subsection{Melhor modelo e métricas obtidas}
@@ -768,7 +782,7 @@ utilizado para treinamento.
   \toprule
   \thead{Métrica} & \thead{Valor} & \thead{Interpretação} \\
   \midrule
-  \taltrow RMSE & 0,1148 & Erro médio quadrático em R\$/litro, penalizando erros maiores. \\
+  \taltrow RMSE & 0,1148 & Erro médio quadrático em R\$/litro, com penalização maior para erros elevados. \\
   MAE & 0,0819 & Erro absoluto médio aproximado de oito centavos por litro. \\
   \taltrow R² & 0,9693 & O modelo explicou cerca de 96,93\% da variação observada no teste. \\
   MAPE & 1,3841\% & Erro percentual médio baixo para o recorte testado. \\
@@ -778,9 +792,9 @@ utilizado para treinamento.
 
 \vspace{3mm}
 
-O tempo aproximado de execução foi de \textbf{60,78 segundos}. Esse resultado mostra
-que a FLAML conseguiu construir um modelo competitivo em pouco tempo, com configuração
-manual mínima por parte da equipe.
+O tempo aproximado de execução foi de \textbf{60,78 segundos}. Em termos práticos,
+isso mostra que a FLAML conseguiu produzir um modelo competitivo em pouco tempo, com
+intervenção manual mínima da equipe.
 
 \begin{figure}[H]
   \centering
@@ -792,6 +806,13 @@ manual mínima por parte da equipe.
   \caption{Comparação entre os valores reais e previstos pela FLAML no conjunto de teste.}
   \label{fig:flaml-real-previsto}
 \end{figure}
+
+\begin{infobox}
+\textbf{Leitura dos resultados:} o valor de RMSE ficou baixo na escala do problema,
+enquanto o R² elevado indica que a maior parte da variação do preço da gasolina C foi
+capturada pelo modelo. Ainda assim, trata-se de um resultado preditivo em dados
+históricos, e não de uma demonstração de causalidade.
+\end{infobox}
 
 % ------------------------------------------------------------------------------
 \subsection{Recursos gerados pela ferramenta}
@@ -809,8 +830,15 @@ O experimento gerou os seguintes artefatos no projeto:
   \taltrow \path{outputs/tables/flaml_importancia_atributos.csv} & Importância dos atributos do melhor modelo final. \\
   \path{outputs/tables/flaml_previsoes_teste.csv} & Valores reais, previsões e erros no conjunto de teste. \\
   \taltrow \path{outputs/tables/flaml_configuracao.json} & Configuração final do melhor modelo e parâmetros do experimento. \\
+  \path{outputs/tables/flaml_baseline_comparacao.csv} & Comparação do desempenho da FLAML com baselines simples. \\
+  \taltrow \path{outputs/tables/flaml_analise_erros_regiao.csv} & Resumo dos erros médios por região no conjunto de teste. \\
+  \path{outputs/tables/flaml_resumo_erros.csv} & Estatísticas resumidas da distribuição dos resíduos. \\
+  \taltrow \path{outputs/tables/flaml_top_importancias.csv} & Ranking das principais variáveis do modelo. \\
   \path{outputs/figures/flaml_real_vs_previsto.png} & Gráfico de valores reais contra valores previstos. \\
   \taltrow \path{outputs/figures/flaml_importancia_atributos.png} & Gráfico dos principais atributos do melhor modelo. \\
+  \path{outputs/figures/flaml_baseline_rmse.png} & Comparação visual do RMSE com baselines. \\
+  \taltrow \path{outputs/figures/flaml_mae_por_regiao.png} & Erro absoluto médio por região. \\
+  \path{outputs/figures/flaml_hist_erro_absoluto.png} & Distribuição dos erros absolutos. \\
   \bottomrule
 \end{tabularx}
 
@@ -818,9 +846,9 @@ O experimento gerou os seguintes artefatos no projeto:
 
 Entre os atributos mais importantes para o melhor modelo, destacaram-se o preço médio
 do etanol hidratado, a participação do etanol, o volume de etanol hidratado, a
-variação de volume da gasolina C e o volume de gasolina C. Essa leitura é coerente
-com o contexto do problema, pois o preço da gasolina C tende a se relacionar com o
-preço do etanol, com o volume vendido e com padrões temporais e regionais.
+variação de volume da gasolina C e o volume de gasolina C. A leitura é coerente com o
+contexto do problema: preços e volumes dos combustíveis se relacionam por dinâmica de
+mercado, competição entre combustíveis e diferenças regionais de consumo.
 
 \begin{figure}[H]
   \centering
@@ -833,30 +861,198 @@ preço do etanol, com o volume vendido e com padrões temporais e regionais.
   \label{fig:flaml-importancia}
 \end{figure}
 
+
 % ------------------------------------------------------------------------------
-\subsection{Interpretação e limitações da primeira aplicação}
+\subsection{Comparação com baselines simples}
+\label{sec:flaml-baselines}
+
+Para avaliar o quanto a FLAML realmente agregou valor ao problema, a equipe comparou o
+resultado obtido com baselines simples construídos a partir do próprio conjunto de
+treinamento. Essa comparação é importante porque métricas altas, isoladamente, nem
+sempre indicam que o modelo superou estratégias ingênuas de previsão.
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4.2pt}
+\begin{tabularx}{\textwidth}{@{}Y C{1.45cm} C{1.45cm} C{1.25cm} C{1.45cm} C{1.8cm}@{}}
+  \toprule
+  \thead{Modelo} & \thead{RMSE} & \thead{MAE} & \thead{R²} & \thead{MAPE} & \thead{Melhora\\RMSE} \\
+  \midrule
+  \taltrow FLAML (\texttt{lgbm}) & 0,1148 & 0,0819 & 0,9693 & 1,3841\% & 82,5\% \\
+  Média do treino & 0,6553 & 0,5165 & \textasciitilde 0,0000 & 8,7384\% & -- \\
+  \taltrow Média por região & 0,6467 & 0,5112 & 0,0262 & 8,6633\% & -- \\
+  Média por UF & 0,6291 & 0,4921 & 0,0785 & 8,3699\% & -- \\
+  \bottomrule
+\end{tabularx}
+\caption{Comparação entre a FLAML e baselines simples calculados a partir do conjunto de treino.}
+\label{tab:flaml-baselines}
+\end{table}
+
+A comparação mostra que o modelo selecionado pela FLAML superou com folga os
+baselines ingênuos. Em relação à predição pela média do treino, o RMSE caiu de 0,6553
+para 0,1148, uma redução de aproximadamente 82,5\%. Mesmo o baseline mais informativo,
+baseado na média por UF, permaneceu muito acima do erro obtido pela FLAML.
+
+Esse resultado indica que a ferramenta foi capaz de explorar relações não lineares e
+interações entre variáveis que os baselines não capturam. Na prática, isso reforça que
+o experimento não apenas produziu um modelo com bom desempenho absoluto, mas também
+gerou valor real em comparação com estratégias extremamente simples.
+
+\begin{figure}[H]
+  \centering
+  \IfFileExists{../../../outputs/figures/flaml_baseline_rmse.png}{%
+    \includegraphics[width=0.78\textwidth]{../../../outputs/figures/flaml_baseline_rmse.png}
+  }{%
+    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_baseline\_rmse.png} não encontrada.}}
+  }
+  \caption{Comparação do RMSE da FLAML com baselines simples.}
+  \label{fig:flaml-baseline-rmse}
+\end{figure}
+
+% ------------------------------------------------------------------------------
+\subsection{Análise dos erros no conjunto de teste}
+\label{sec:flaml-erros}
+
+Além das métricas globais, a análise dos resíduos ajuda a entender onde o modelo se
+comporta melhor e onde ele encontra mais dificuldade. No conjunto de teste, o erro
+absoluto médio foi de 0,0819, com mediana de 0,0586. Metade das previsões teve erro
+absoluto abaixo de 0,0586, e 95\% ficaram abaixo de 0,2164.
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{0.78\textwidth}{@{}Y C{2.35cm}@{}}
+  \toprule
+  \thead{Resumo do erro} & \thead{Valor} \\
+  \midrule
+  \taltrow Mediana do erro absoluto & 0,0586 \\
+  75\% dos erros absolutos & 0,1155 \\
+  \taltrow 90\% dos erros absolutos & 0,1843 \\
+  95\% dos erros absolutos & 0,2164 \\
+  Máximo erro absoluto & 0,7992 \\
+  \taltrow Desvio-padrão do erro assinado & 0,1150 \\
+  Erro médio assinado & -0,0002 \\
+  \bottomrule
+\end{tabularx}
+\caption{Resumo da distribuição dos resíduos da FLAML no conjunto de teste.}
+\label{tab:flaml-resumo-erros}
+\end{table}
+
+A distribuição dos erros mostra que a maior parte das previsões ficou próxima do valor
+real, sem viés sistemático relevante, já que o erro médio assinado ficou praticamente
+nulo. O maior erro absoluto observado foi concentrado em um caso específico da região
+Norte, o que sugere sensibilidade maior em alguns pontos com menor representatividade
+no conjunto de teste.
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabularx}{0.92\textwidth}{@{}Y C{1.45cm} C{1.45cm} C{1.6cm} C{1.6cm}@{}}
+  \toprule
+  \thead{Região} & \thead{MAE} & \thead{RMSE} & \thead{Erro médio} & \thead{MAPE} \\
+  \midrule
+  \taltrow CENTRO OESTE & 0,0687 & 0,0951 & 0,0099 & 1,1804\% \\
+  SUDESTE & 0,0702 & 0,1062 & -0,0076 & 1,2052\% \\
+  \taltrow NORDESTE & 0,0802 & 0,1004 & 0,0128 & 1,3293\% \\
+  NORTE & 0,0902 & 0,1409 & -0,0055 & 1,5240\% \\
+  \taltrow SUL & 0,1011 & 0,1227 & -0,0308 & 1,7318\% \\
+  \bottomrule
+\end{tabularx}
+\caption{Erro médio da FLAML por região no conjunto de teste.}
+\label{tab:flaml-erro-regiao}
+\end{table}
+
+Em nível regional, o Centro-Oeste e o Sudeste tiveram os menores erros médios, enquanto
+o Sul apresentou o maior MAE entre as cinco regiões. Ainda assim, a diferença entre as
+regiões não foi dramática, e todos os valores permaneceram em patamares baixos para um
+problema de regressão tabular. Isso indica que o modelo aprendeu padrões relativamente
+estáveis, mas ainda há espaço para refinamento em regiões com maior heterogeneidade.
+
+\begin{figure}[H]
+  \centering
+  \IfFileExists{../../../outputs/figures/flaml_mae_por_regiao.png}{%
+    \includegraphics[width=0.78\textwidth]{../../../outputs/figures/flaml_mae_por_regiao.png}
+  }{%
+    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_mae\_por\_regiao.png} não encontrada.}}
+  }
+  \caption{Erro absoluto médio da FLAML por região.}
+  \label{fig:flaml-mae-regiao}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \IfFileExists{../../../outputs/figures/flaml_hist_erro_absoluto.png}{%
+    \includegraphics[width=0.78\textwidth]{../../../outputs/figures/flaml_hist_erro_absoluto.png}
+  }{%
+    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_hist\_erro\_absoluto.png} não encontrada.}}
+  }
+  \caption{Distribuição dos erros absolutos da FLAML no conjunto de teste.}
+  \label{fig:flaml-hist-erro}
+\end{figure}
+
+% ------------------------------------------------------------------------------
+\subsection{Validade experimental e ameaças à generalização}
+\label{sec:flaml-validade}
+
+Os resultados obtidos demonstram que a FLAML foi capaz de construir um modelo com
+elevado desempenho preditivo para o conjunto de dados analisado. Entretanto, algumas
+limitações metodológicas devem ser consideradas ao interpretar esses números.
+
+Em primeiro lugar, o experimento foi conduzido com dados históricos de 2021 a 2025.
+Dessa forma, o modelo aprende padrões presentes nesse intervalo temporal específico e
+não há garantia de que o mesmo desempenho será mantido em cenários futuros sujeitos a
+mudanças econômicas, tributárias ou regulatórias.
+
+Além disso, apesar de as colunas que poderiam causar vazamento direto terem sido
+removidas, ainda existem atributos fortemente correlacionados com a variável-alvo. Isso
+ajuda a explicar o alto desempenho observado, mas também significa que o modelo está
+aprendendo relações estatísticas muito informativas do próprio contexto de mercado.
+
+Outro ponto importante é que esta etapa não teve como objetivo construir um sistema
+operacional de previsão em produção. O foco foi avaliar a capacidade da ferramenta
+AutoML de encontrar automaticamente modelos competitivos em um problema tabular de
+regressão.
+
+Por fim, métricas elevadas não implicam causalidade. O modelo identifica padrões
+associativos presentes nos dados, mas não determina relações de causa e efeito entre
+preços, volumes de venda, região geográfica e período temporal.
+% ------------------------------------------------------------------------------
+\subsection{Interpretação e fechamento da primeira aplicação}
 \label{sec:flaml-interpretacao}
-% ------------------------------------------------------------------------------
 
-A FLAML apresentou bom desempenho na tarefa de regressão, com RMSE de 0,1148 no
-conjunto de teste. Em termos práticos, o erro médio ficou em uma escala pequena diante
-dos preços observados no dataset, que variam aproximadamente entre R\$ 4,25 e
-R\$ 8,12 por litro.
+A FLAML apresentou desempenho muito forte na tarefa de regressão, com RMSE de 0,1148
+no conjunto de teste e R² de 0,9693. Em termos práticos, o modelo consegue reproduzir
+com boa precisão a estrutura dos preços observados no período analisado, mantendo erro
+absoluto médio inferior a nove centavos por litro.
 
-Ao mesmo tempo, a interpretação deve ser feita com cuidado. O modelo aprende padrões
-estatísticos do período analisado, mas não prova causalidade entre preço, volume,
-região e tempo. Além disso, o experimento usa variáveis do mesmo mês da observação,
-logo o resultado representa uma tarefa de modelagem supervisionada sobre dados
-tabulares históricos, e não necessariamente uma previsão futura em cenário operacional.
+O ganho em relação aos baselines simples confirma que o bom desempenho não veio apenas
+da estabilidade média dos dados. Mesmo quando comparado ao baseline por UF, que já é
+mais informativo do que a média global, a FLAML permaneceu substancialmente melhor.
+Isso sugere que a ferramenta conseguiu capturar interações entre variáveis de mercado,
+região e período que são úteis para a tarefa.
+
+Ao mesmo tempo, a interpretação deve continuar sendo cautelosa. O modelo aprendeu
+padrões históricos e não estabelece causalidade entre as variáveis. Além disso, o
+experimento usa dados do mesmo período da observação, o que favorece a modelagem
+supervisionada, mas não equivale automaticamente a um cenário de previsão futura em
+produção.
+
+A análise feita nesta etapa cumpre, portanto, um papel metodológico claro: mostrar que
+a FLAML é uma opção eficiente para obter um baseline forte em pouco tempo, com boa
+capacidade preditiva e baixa intervenção manual. Isso prepara o terreno para a
+comparação com a LightAutoML na etapa seguinte.
 
 \begin{notebox}
-\textbf{Síntese da Parte 3:} a FLAML foi fácil de configurar, executou a busca
-automática dentro do orçamento de tempo definido, selecionou \texttt{lgbm} como melhor
-modelo e gerou métricas, leaderboard, previsões e importância de atributos. A etapa
-humana continuou necessária para definir o alvo, remover colunas com vazamento de
-dados, escolher a métrica principal e interpretar os resultados.
+\textbf{Síntese da Parte 3:} a FLAML foi fácil de configurar, superou baselines simples
+com ampla margem, executou a busca automática dentro do orçamento de tempo definido,
+selecionou \texttt{lgbm} como melhor modelo e gerou métricas, \textit{leaderboard},
+previsões e importância de atributos. A etapa humana continuou essencial para definir
+o alvo, remover colunas com vazamento de dados, escolher a métrica principal e
+interpretar os resultados no contexto do problema.
 \end{notebox}
-
 % ==============================================================================
 % Referencias
 % ==============================================================================
