@@ -77,6 +77,8 @@
 
 **Divisão treino-teste:** 80% treino (1.295 registros) / 20% teste (324 registros), estratificada por região, com `random_state = 42`.
 
+**Evidência coletada:** arquivo tratado `data/processed/dataset_anp_pca_mds_2021_2025.csv`, com 1.619 linhas e 16 colunas, sem valores ausentes.
+
 > **Imagem sugerida:** tabela com as primeiras linhas do dataset ou gráfico de distribuição do preço médio da gasolina C por região ao longo do tempo
 
 ---
@@ -107,6 +109,8 @@ python -m src.flaml_analysis
 
 **Melhor modelo:** LightGBM com `n_estimators = 1294`, `num_leaves = 22` e `learning_rate = 0,0132`.
 
+**Evidência coletada:** `outputs/tables/flaml_leaderboard.csv` e `outputs/tables/flaml_configuracao.json`.
+
 > **Imagem sugerida:** captura do terminal mostrando o progresso da FLAML
 
 ---
@@ -129,7 +133,10 @@ python -m src.flaml_analysis
 
 **Interpretação:** o modelo explicou 96,93% da variação do preço da gasolina C.
 
+**Evidência coletada:** `outputs/tables/flaml_metricas.csv` e `outputs/tables/flaml_baseline_comparacao.csv`.
+
 > **Imagem sugerida:** gráfico `flaml_real_vs_previsto.png` (valores reais x previstos no conjunto de teste)
+> **Imagem opcional:** gráfico `flaml_baseline_rmse.png` para mostrar a comparação com baselines
 
 ---
 
@@ -147,6 +154,8 @@ python -m src.flaml_analysis
 **Erros por região:**
 - Menores: Centro-Oeste (MAE 0,069) e Sudeste (MAE 0,070)
 - Maior: Sul (MAE 0,101)
+
+**Evidência coletada:** `outputs/tables/flaml_importancia_atributos.csv` e `outputs/tables/flaml_analise_erros_regiao.csv`.
 
 > **Imagem sugerida:** gráfico `flaml_importancia_atributos.png` - barras horizontais com os atributos mais importantes
 
@@ -178,6 +187,8 @@ python -m src.lightautoml_analysis
 - Nível 0: modelos lineares regularizados e LightGBM
 - Nível 1: blending automático das previsões OOF
 
+**Evidência coletada:** script reprodutível `src/lightautoml_analysis.py`, com `Task("reg", metric="mse")`, 5 dobras de validação cruzada e orçamento de 120 segundos.
+
 > **Imagem sugerida:** diagrama simplificado da arquitetura de pipeline multinível da LightAutoML
 
 ---
@@ -202,7 +213,10 @@ python -m src.lightautoml_analysis
 
 **Observação interessante:** variáveis categóricas `uf` e `regiao` obtiveram importância zero no método rápido, indicando que as variáveis numéricas já capturam as diferenças regionais.
 
+**Evidência coletada:** `outputs/tables/lightautoml_metricas.csv` e `outputs/tables/lightautoml_importancia_atributos.csv`.
+
 > **Imagem sugerida:** gráfico `lightautoml_real_vs_previsto.png` (valores reais x previstos no conjunto de teste)
+> **Imagem opcional:** gráfico `lightautoml_importancia_atributos.png` para destacar os principais atributos
 
 ---
 
@@ -221,6 +235,8 @@ python -m src.lightautoml_analysis
 **Ausência de viés:** erro médio assinado de -0,0028 (praticamente nulo), sem tendência sistemática de superestimação ou subestimação.
 
 **Máximo erro absoluto:** R$ 0,42/litro (bem menor do que o máximo da FLAML, de R$ 0,80/litro)
+
+**Evidência coletada:** `outputs/tables/lightautoml_analise_erros_regiao.csv`, `outputs/tables/lightautoml_resumo_erros.csv` e `outputs/tables/lightautoml_previsoes_teste.csv`.
 
 > **Imagem sugerida:** gráfico `lightautoml_mae_por_regiao.png` ou `lightautoml_hist_erro_absoluto.png`
 
@@ -243,6 +259,8 @@ python -m src.lightautoml_analysis
 | Pipeline | Estimador único | Multinível com blending |
 
 **Conclusão:** as duas ferramentas chegaram a resultados equivalentes. A diferença de RMSE (0,0014) é menor do que R$ 0,002 por litro.
+
+**Evidência coletada:** tabelas `outputs/tables/flaml_metricas.csv` e `outputs/tables/lightautoml_metricas.csv`, ambas calculadas no mesmo conjunto de teste.
 
 > **Imagem sugerida:** tabela comparativa lado a lado com destaque visual nas melhores métricas de cada ferramenta
 
@@ -294,11 +312,16 @@ python -m src.lightautoml_analysis
 | Arquivo | Onde usar |
 |---------|-----------|
 | `outputs/figures/flaml_real_vs_previsto.png` | Slide 6 - FLAML resultados |
+| `outputs/figures/flaml_baseline_rmse.png` | Slide 6 - comparação com baselines |
 | `outputs/figures/flaml_importancia_atributos.png` | Slide 7 - FLAML importância |
+| `outputs/figures/flaml_mae_por_regiao.png` | Slide 7 - erros regionais da FLAML |
 | `outputs/figures/lightautoml_real_vs_previsto.png` | Slide 9 - LightAutoML resultados |
-| `outputs/figures/lightautoml_importancia_atributos.png` | Slide 9 - LightAutoML importância |
+| `outputs/figures/lightautoml_importancia_atributos.png` | Slide 9 ou 10 - LightAutoML importância |
 | `outputs/figures/lightautoml_mae_por_regiao.png` | Slide 10 - erros regionais |
 | `outputs/figures/lightautoml_hist_erro_absoluto.png` | Slide 10 - distribuição dos erros |
+| `outputs/tables/flaml_leaderboard.csv` | Slide 5 - estimadores avaliados |
 | `outputs/tables/flaml_metricas.csv` | Verificação dos números |
+| `outputs/tables/flaml_baseline_comparacao.csv` | Slide 6 - baselines simples |
 | `outputs/tables/lightautoml_metricas.csv` | Verificação dos números |
+| `outputs/tables/lightautoml_resumo_erros.csv` | Slide 10 - distribuição dos resíduos |
 | `docs/relatorios/v3.0/relatorio_auto_ml_equipe9_v03.0.pdf` | Relatório completo para entrega |

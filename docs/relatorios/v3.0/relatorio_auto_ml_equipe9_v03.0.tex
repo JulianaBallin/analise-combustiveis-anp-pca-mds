@@ -299,7 +299,7 @@
   \thead{Versão} & \thead{Data} & \thead{Autores} & \thead{Descrição} \\
   \midrule
   1.0 & 26/05/2026 & Equipe 9 & Criação inicial do relatório. Parte 1: explicação teórica sobre AutoML. Parte 2: descrição do dataset ANP. \\
-  \taltrow 2.0 & 26/05/2026 & Equipe 9 & Segunda entrega. Parte 3: aplicação da primeira ferramenta AutoML, FLAML, ao problema de regressão do preço médio da gasolina C. \\
+  \taltrow 2.0 & 30/05/2026 & Equipe 9 & Segunda entrega. Parte 3: aplicação da primeira ferramenta AutoML, FLAML, ao problema de regressão do preço médio da gasolina C. \\
   3.0 & 31/05/2026 & Equipe 9 & Entrega final. Parte 4: aplicação da segunda ferramenta AutoML, LightAutoML. Parte 5: reflexão crítica e comparação entre as duas ferramentas. \\
   \bottomrule
 \end{tabularx}
@@ -321,6 +321,53 @@
 % Sumário
 % ==============================================================================
 \tableofcontents
+\newpage
+
+% ==============================================================================
+% Resumo executivo
+% ==============================================================================
+\section*{Resumo Executivo}
+\addcontentsline{toc}{section}{Resumo Executivo}
+
+Este relatório consolida a comparação entre \textbf{FLAML} e \textbf{LightAutoML}
+na previsão do preço médio mensal da gasolina C por UF, usando o dataset tratado da
+ANP entre janeiro de 2021 e dezembro de 2025. As duas ferramentas foram avaliadas
+com a mesma variável-alvo, a mesma divisão treino e teste, a mesma semente aleatória
+e a mesma métrica principal, RMSE.
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabularx}{\textwidth}{@{}Y C{2cm} C{2cm} C{2cm} C{2.4cm}@{}}
+  \toprule
+  \thead{Ferramenta} & \thead{RMSE} & \thead{MAE} & \thead{R²} & \thead{Tempo} \\
+  \midrule
+  \taltrow FLAML & 0,1148 & 0,0819 & 0,9693 & 60,78s \\
+  LightAutoML & 0,1134 & 0,0888 & 0,9701 & 73,94s \\
+  \bottomrule
+\end{tabularx}
+\caption{Resumo dos principais resultados no conjunto de teste.}
+\label{tab:resumo-executivo}
+\end{table}
+
+\begin{infobox}
+\textbf{Conclusão executiva:} as duas ferramentas apresentaram desempenho praticamente
+equivalente. A LightAutoML teve leve vantagem em RMSE e R², enquanto a FLAML teve
+melhor MAE, melhor MAPE, menor tempo de execução e maior transparência operacional.
+Para iniciantes, a recomendação da equipe é a FLAML. Para cenários com necessidade
+de pipelines mais automatizados e multiníveis, a LightAutoML é uma alternativa robusta.
+\end{infobox}
+
+\textbf{Principais evidências coletadas:}
+\begin{itemize}[leftmargin=1.5cm, itemsep=4pt]
+  \item Os experimentos foram executados por scripts reprodutíveis em \texttt{src/flaml\_analysis.py} e \texttt{src/lightautoml\_analysis.py}.
+  \item As métricas e previsões da FLAML estão registradas nas tabelas de saída do experimento.
+  \item As métricas e previsões da LightAutoML estão registradas nas tabelas de saída do experimento.
+  \item Os gráficos de valores reais contra previstos, importância de atributos e erros regionais estão em \texttt{outputs/figures/}.
+  \item As colunas com risco de vazamento de dados foram removidas antes do treinamento nas duas ferramentas.
+\end{itemize}
+
 \newpage
 
 % ==============================================================================
@@ -996,6 +1043,35 @@ da ferramenta utilizada.
 \end{figure}
 
 % ------------------------------------------------------------------------------
+\subsection{Validade experimental da Parte 4}
+\label{sec:lama-validade}
+% ------------------------------------------------------------------------------
+
+Para que a comparação com a FLAML fosse justa, a aplicação da LightAutoML seguiu
+os mesmos cuidados metodológicos da primeira ferramenta. O conjunto de teste foi
+mantido isolado até a etapa final de avaliação, a estratificação por região foi
+preservada e as colunas derivadas diretamente da variável-alvo foram removidas antes
+do treinamento.
+
+\begin{tabularx}{\textwidth}{@{}L{5.2cm} Y@{}}
+  \toprule
+  \thead{Critério de controle} & \thead{Como foi aplicado} \\
+  \midrule
+  \taltrow Mesma base de dados & Uso do arquivo tratado \texttt{dataset\_anp\_pca\_mds\_2021\_2025.csv}. \\
+  Mesma divisão experimental & 80\% treino e 20\% teste, com \texttt{random\_state = 42} e estratificação por região. \\
+  \taltrow Mesma variável-alvo & Previsão de \texttt{preco\_medio\_gasolina\_c}. \\
+  Mesmo controle de vazamento & Remoção de \texttt{variacao\_preco\_gasolina\_c} e \texttt{preco\_relativo\_etanol\_gasolina}. \\
+  \taltrow Mesma métrica central & RMSE calculado no conjunto de teste. \\
+  Reprodutibilidade & Scripts, tabelas e figuras salvos no repositório para auditoria dos resultados. \\
+  \bottomrule
+\end{tabularx}
+
+Mesmo com esses controles, a comparação deve ser interpretada como um experimento
+didático e exploratório. O orçamento de tempo não foi idêntico porque a LightAutoML
+precisou de maior folga para completar seu pipeline multinível, enquanto a FLAML foi
+avaliada com orçamento menor e estimadores explicitamente limitados.
+
+% ------------------------------------------------------------------------------
 \subsection{Síntese da aplicação da LightAutoML}
 \label{sec:lama-sintese}
 % ------------------------------------------------------------------------------
@@ -1217,7 +1293,7 @@ A equipe recomenda a \textbf{FLAML} para iniciantes. As razões são:
 
 \begin{enumerate}[leftmargin=1.5cm, itemsep=4pt]
   \item \textbf{API intuitiva e próxima ao padrão scikit-learn:} a interface da FLAML é familiar para quem já conhece sklearn, facilitando a curva de aprendizado.
-  \item \textbf{Transparência do processo:} o leaderboard comparativo permite que o usuário entenda quais algoritmos foram avaliados e por quê o melhor foi selecionado, algo pedagógico para quem está aprendendo.
+  \item \textbf{Transparência do processo:} o leaderboard comparativo permite que o usuário entenda quais algoritmos foram avaliados e por que o melhor foi selecionado, algo pedagógico para quem está aprendendo.
   \item \textbf{Instalação simples:} \texttt{pip install flaml} sem dependências conflitantes ou avisos de pacotes opcionais.
   \item \textbf{Desempenho competitivo:} para datasets tabulares de porte médio, a diferença de desempenho em relação a ferramentas mais complexas é pequena, como demonstrado neste experimento.
   \item \textbf{Documentação acessível:} a documentação oficial da FLAML é clara e possui exemplos didáticos.
@@ -1236,8 +1312,23 @@ recomenda a FLAML. Para projetos com maior exigência de sofisticação e pipeli
 automatizado de múltiplos níveis, a LightAutoML é uma opção mais robusta.
 \end{infobox}
 
+\subsection{Encaminhamento final}
+\label{sec:encaminhamento-final}
+
+Como encaminhamento, a equipe entende que o AutoML cumpriu bem o papel de acelerar a
+construção de modelos fortes para dados tabulares. O experimento também mostrou que
+comparar ferramentas apenas pela menor métrica pode ser insuficiente: facilidade de
+uso, interpretabilidade, custo computacional, documentação e clareza do pipeline são
+critérios tão importantes quanto pequenas diferenças numéricas.
+
+Em um projeto real, o próximo passo seria validar os modelos em uma janela temporal
+posterior, acompanhar a estabilidade dos erros por UF e região, e produzir explicações
+locais das previsões para casos de maior impacto. Assim, o AutoML seria usado como
+base técnica inicial, mas a decisão final continuaria apoiada por validação humana e
+conhecimento do domínio de combustíveis.
+
 % ==============================================================================
-% Referencias
+% Referências
 % ==============================================================================
 \newpage
 \section*{Referências}

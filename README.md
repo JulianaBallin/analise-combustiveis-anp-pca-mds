@@ -26,6 +26,11 @@ Este projeto também é utilizado como base para a atividade de comparação de 
 | **v2.0** | Parte 3: Aplicação da primeira ferramenta AutoML (FLAML) | `docs/relatorios/v2.0/relatorio_auto_ml_equipe9_v02.0.tex` e `.pdf` |
 | **v3.0** | Parte 4: Aplicação da segunda ferramenta (LightAutoML); Parte 5: Reflexão e comparação | `docs/relatorios/v3.0/relatorio_auto_ml_equipe9_v03.0.tex` e `.pdf` |
 
+Os relatórios são mantidos em LaTeX e também em PDF. O v3.0 é a entrega final,
+pois consolida as partes anteriores, inclui o experimento com LightAutoML, compara
+as duas ferramentas e registra as evidências geradas em `outputs/tables/` e
+`outputs/figures/`.
+
 ### Experimento FLAML
 
 O experimento da primeira ferramenta AutoML está implementado em `src/flaml_analysis.py`. Ele utiliza o dataset processado, remove colunas que causariam vazamento de dados, aplica a divisão 80% treino e 20% teste estratificada por região, executa a FLAML com orçamento de 60 segundos e salva métricas, leaderboard, previsões e importância de atributos.
@@ -317,7 +322,28 @@ python -m src.lightautoml_analysis
 
 Esse comando utiliza o mesmo dataset e a mesma divisão treino-teste da FLAML, executa o pipeline multinível da LightAutoML com orçamento de 120 segundos e gera os arquivos `outputs/tables/lightautoml_*` e `outputs/figures/lightautoml_*`.
 
-### 7. Executar o notebook
+### 7. Gerar os relatórios AutoML em PDF
+
+Os relatórios ficam em `docs/relatorios/` e devem ser compilados a partir da pasta
+de cada versão para que os caminhos das imagens e do logotipo sejam resolvidos
+corretamente.
+
+```bash
+cd docs/relatorios/v1.0
+pdflatex -interaction=nonstopmode relatorio_auto_ml_equipe9_v01.0.tex
+
+cd ../v2.0
+pdflatex -interaction=nonstopmode relatorio_auto_ml_equipe9_v02.0.tex
+
+cd ../v3.0
+pdflatex -interaction=nonstopmode relatorio_auto_ml_equipe9_v03.0.tex
+```
+
+Os PDFs esperados são `relatorio_auto_ml_equipe9_v01.0.pdf`,
+`relatorio_auto_ml_equipe9_v02.0.pdf` e `relatorio_auto_ml_equipe9_v03.0.pdf`,
+cada um dentro da pasta da respectiva versão.
+
+### 8. Executar o notebook
 
 ```bash
 jupyter notebook notebooks/analise_pca_mds_anp.ipynb
@@ -361,7 +387,7 @@ torch
 | Relatório AutoML v3.0 | `docs/relatorios/v3.0/relatorio_auto_ml_equipe9_v03.0.tex` e `.pdf` |
 | Slides da apresentação AutoML | `docs/slides/apresentacao_resultados_automl.md` |
 
-Principais resultados do recorte 2021-2025 (27 UFs, 1619 registros UF-mês após o join corrigido mês+UF e alinhamento do PCA atual):
+Principais resultados do recorte 2021-2025 (27 UFs, 1.619 registros UF-mês após o join corrigido mês+UF e alinhamento do PCA atual):
 
 * Os dois primeiros componentes do PCA explicaram **cerca de 57,5%** da variância total.
 * O PC1 foi mais influenciado por participação do etanol, razão etanol/gasolina, volume de etanol e preço relativo etanol/gasolina.
