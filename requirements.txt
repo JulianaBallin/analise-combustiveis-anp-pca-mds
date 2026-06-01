@@ -3,8 +3,11 @@ numpy
 scikit-learn>=1.7
 matplotlib
 seaborn
+jupyter
 openpyxl
 python-pptx
 reportlab
 flaml
 lightgbm
+lightautoml
+torch

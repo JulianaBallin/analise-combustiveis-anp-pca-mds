@@ -60,9 +60,9 @@ def main() -> None:
 
     print("Iniciando treinamento LightAutoML...")
     inicio = time.perf_counter()
-    oof_pred = automl.fit_predict(train_para_lama, roles=roles, verbose=0)
+    automl.fit_predict(train_para_lama, roles=roles, verbose=0)
     tempo_execucao = time.perf_counter() - inicio
-    print(f"Treinamento concluido em {tempo_execucao:.2f}s")
+    print(f"Treinamento concluído em {tempo_execucao:.2f}s")
 
     test_pred = automl.predict(test_para_lama)
 
@@ -76,7 +76,7 @@ def main() -> None:
 
     metricas = pd.DataFrame([{
         "ferramenta": "LightAutoML",
-        "tipo_problema": "regressao",
+        "tipo_problema": "regressão",
         "variavel_alvo": TARGET,
         "metrica_principal": "RMSE",
         "rmse_teste": rmse,
@@ -100,7 +100,8 @@ def main() -> None:
             importancias.to_csv(OUT_TAB / "lightautoml_importancia_atributos.csv", index=False)
         else:
             importancias = pd.DataFrame()
-    except Exception:
+    except Exception as exc:
+        print(f"Não foi possível extrair a importância dos atributos: {exc}")
         importancias = pd.DataFrame()
 
     previsoes_df = test_df[["mes_ano", "uf", "regiao", TARGET]].copy()
@@ -134,8 +135,8 @@ def main() -> None:
 
     gerar_figuras(y_test, previsoes, importancias, previsoes_df)
 
-    print("Experimento LightAutoML concluido.")
-    print(f"Arquivos salvos em outputs/tables/ e outputs/figures/")
+    print("Experimento LightAutoML concluído.")
+    print("Arquivos salvos em outputs/tables/ e outputs/figures/")
 
 
 def carregar_dataset() -> pd.DataFrame:
@@ -169,8 +170,8 @@ def gerar_figuras(
     maximo = float(max(y_test.max(), previsoes.max()))
     plt.plot([minimo, maximo], [minimo, maximo], color="#b05f00", linewidth=1.5)
     plt.title("LightAutoML: valores reais e previstos")
-    plt.xlabel("Preco real da gasolina C (R$/litro)")
-    plt.ylabel("Preco previsto da gasolina C (R$/litro)")
+    plt.xlabel("Preço real da gasolina C (R$/litro)")
+    plt.ylabel("Preço previsto da gasolina C (R$/litro)")
     plt.savefig(OUT_FIG / "lightautoml_real_vs_previsto.png", dpi=140, bbox_inches="tight")
     plt.close()
 
@@ -180,7 +181,7 @@ def gerar_figuras(
         plt.figure(figsize=(9, 6))
         sns.barplot(data=top, x="Importance", y=col_feat, color="#4a9e6b")
         plt.title("LightAutoML: principais atributos")
-        plt.xlabel("Importancia")
+        plt.xlabel("Importância")
         plt.ylabel("Atributo")
         plt.savefig(OUT_FIG / "lightautoml_importancia_atributos.png", dpi=140, bbox_inches="tight")
         plt.close()
@@ -188,9 +189,9 @@ def gerar_figuras(
     erros_abs = previsoes_df["erro_absoluto"]
     plt.figure(figsize=(8, 5))
     sns.histplot(erros_abs, bins=30, color="#1a5c2a", kde=True)
-    plt.title("LightAutoML: distribuicao dos erros absolutos")
+    plt.title("LightAutoML: distribuição dos erros absolutos")
     plt.xlabel("Erro absoluto (R$/litro)")
-    plt.ylabel("Frequencia")
+    plt.ylabel("Frequência")
     plt.savefig(OUT_FIG / "lightautoml_hist_erro_absoluto.png", dpi=140, bbox_inches="tight")
     plt.close()
 
@@ -198,9 +199,9 @@ def gerar_figuras(
     regiao_df.columns = ["regiao", "mae"]
     plt.figure(figsize=(8, 5))
     sns.barplot(data=regiao_df.sort_values("mae", ascending=False), x="mae", y="regiao", color="#4a9e6b")
-    plt.title("LightAutoML: MAE por regiao")
+    plt.title("LightAutoML: MAE por região")
     plt.xlabel("MAE (R$/litro)")
-    plt.ylabel("Regiao")
+    plt.ylabel("Região")
     plt.savefig(OUT_FIG / "lightautoml_mae_por_regiao.png", dpi=140, bbox_inches="tight")
     plt.close()
 

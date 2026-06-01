@@ -78,9 +78,23 @@ def main() -> None:
     leaderboard = montar_leaderboard(automl)
     importancia = extrair_importancia_atributos(automl, X.columns)
     previsoes_df = montar_previsoes(dados, test_idx, previsoes)
+    baseline = calcular_baselines(dados, train_idx, test_idx, previsoes)
+    resumo_erros = resumir_erros(previsoes_df)
+    erros_regiao = analisar_erros_por_regiao(previsoes_df)
+    top_importancias = importancia.head(12).copy()
 
-    salvar_resultados(metricas, leaderboard, importancia, previsoes_df, automl)
-    gerar_figuras(y_test, previsoes, importancia)
+    salvar_resultados(
+        metricas,
+        leaderboard,
+        importancia,
+        previsoes_df,
+        automl,
+        baseline,
+        resumo_erros,
+        erros_regiao,
+        top_importancias,
+    )
+    gerar_figuras(y_test, previsoes, importancia, baseline, previsoes_df)
 
     linha = metricas.iloc[0]
     print("Experimento FLAML concluído.")
@@ -204,17 +218,100 @@ def montar_previsoes(dados: pd.DataFrame, test_idx: pd.Index, previsoes) -> pd.D
     return resultado.sort_values("erro_absoluto", ascending=False)
 
 
+def calcular_baselines(
+    dados: pd.DataFrame,
+    train_idx: pd.Index,
+    test_idx: pd.Index,
+    previsoes,
+) -> pd.DataFrame:
+    treino = dados.loc[train_idx]
+    teste = dados.loc[test_idx]
+    y_test = teste[TARGET].astype(float)
+
+    media_global = float(treino[TARGET].mean())
+    medias_regiao = treino.groupby("regiao")[TARGET].mean()
+    medias_uf = treino.groupby("uf")[TARGET].mean()
+
+    predicoes = {
+        "FLAML (lgbm)": pd.Series(previsoes, index=test_idx, dtype=float),
+        "Média do treino": pd.Series(media_global, index=test_idx, dtype=float),
+        "Média por região": teste["regiao"].map(medias_regiao).fillna(media_global).astype(float),
+        "Média por UF": teste["uf"].map(medias_uf).fillna(media_global).astype(float),
+    }
+
+    rmse_referencia = mean_squared_error(y_test, predicoes["Média do treino"]) ** 0.5
+    linhas = []
+    for nome, pred in predicoes.items():
+        rmse = mean_squared_error(y_test, pred) ** 0.5
+        linhas.append(
+            {
+                "modelo": nome,
+                "rmse": rmse,
+                "mae": mean_absolute_error(y_test, pred),
+                "r2": r2_score(y_test, pred),
+                "mape_percentual": (abs((y_test - pred) / y_test).mean()) * 100,
+                "melhora_rmse_vs_media_treino_percentual": (
+                    (1 - rmse / rmse_referencia) * 100 if nome == "FLAML (lgbm)" else None
+                ),
+            }
+        )
+
+    return pd.DataFrame(linhas)
+
+
+def resumir_erros(previsoes_df: pd.DataFrame) -> pd.DataFrame:
+    erros_abs = previsoes_df["erro_absoluto"]
+    return pd.DataFrame(
+        [
+            {
+                "mediana_erro_absoluto": float(erros_abs.median()),
+                "percentil_75": float(erros_abs.quantile(0.75)),
+                "percentil_90": float(erros_abs.quantile(0.90)),
+                "percentil_95": float(erros_abs.quantile(0.95)),
+                "max_erro_absoluto": float(erros_abs.max()),
+                "desvio_padrao_erro_assinado": float(previsoes_df["erro"].std()),
+                "erro_medio_assinado": float(previsoes_df["erro"].mean()),
+            }
+        ]
+    )
+
+
+def analisar_erros_por_regiao(previsoes_df: pd.DataFrame) -> pd.DataFrame:
+    return (
+        previsoes_df.groupby("regiao")
+        .agg(
+            mae=("erro_absoluto", "mean"),
+            rmse=("erro", lambda x: float((x.pow(2).mean()) ** 0.5)),
+            erro_medio=("erro", "mean"),
+            mape=(
+                "erro_absoluto",
+                lambda x: float((x / previsoes_df.loc[x.index, TARGET]).mean() * 100),
+            ),
+        )
+        .reset_index()
+        .sort_values("mae")
+    )
+
+
 def salvar_resultados(
     metricas: pd.DataFrame,
     leaderboard: pd.DataFrame,
     importancia: pd.DataFrame,
     previsoes: pd.DataFrame,
     automl: AutoML,
+    baseline: pd.DataFrame,
+    resumo_erros: pd.DataFrame,
+    erros_regiao: pd.DataFrame,
+    top_importancias: pd.DataFrame,
 ) -> None:
     metricas.to_csv(OUT_TAB / "flaml_metricas.csv", index=False)
     leaderboard.to_csv(OUT_TAB / "flaml_leaderboard.csv", index=False)
     importancia.to_csv(OUT_TAB / "flaml_importancia_atributos.csv", index=False)
     previsoes.to_csv(OUT_TAB / "flaml_previsoes_teste.csv", index=False)
+    baseline.to_csv(OUT_TAB / "flaml_baseline_comparacao.csv", index=False)
+    resumo_erros.to_csv(OUT_TAB / "flaml_resumo_erros.csv", index=False)
+    erros_regiao.to_csv(OUT_TAB / "flaml_analise_erros_regiao.csv", index=False)
+    top_importancias.to_csv(OUT_TAB / "flaml_top_importancias.csv", index=False)
 
     configuracao = {
         "best_estimator": automl.best_estimator,
@@ -233,7 +330,13 @@ def salvar_resultados(
     )
 
 
-def gerar_figuras(y_test: pd.Series, previsoes, importancia: pd.DataFrame) -> None:
+def gerar_figuras(
+    y_test: pd.Series,
+    previsoes,
+    importancia: pd.DataFrame,
+    baseline: pd.DataFrame,
+    previsoes_df: pd.DataFrame,
+) -> None:
     sns.set_theme(style="whitegrid", context="notebook")
 
     plt.figure(figsize=(7, 6))
@@ -245,6 +348,42 @@ def gerar_figuras(y_test: pd.Series, previsoes, importancia: pd.DataFrame) -> No
     plt.xlabel("Preço real da gasolina C (R$/litro)")
     plt.ylabel("Preço previsto da gasolina C (R$/litro)")
     plt.savefig(OUT_FIG / "flaml_real_vs_previsto.png", dpi=140, bbox_inches="tight")
+    plt.close()
+
+    plt.figure(figsize=(8, 5))
+    sns.barplot(
+        data=baseline.sort_values("rmse"),
+        x="rmse",
+        y="modelo",
+        color="#4a9e6b",
+    )
+    plt.title("FLAML: comparação de RMSE com baselines")
+    plt.xlabel("RMSE (R$/litro)")
+    plt.ylabel("Modelo")
+    plt.savefig(OUT_FIG / "flaml_baseline_rmse.png", dpi=140, bbox_inches="tight")
+    plt.close()
+
+    plt.figure(figsize=(8, 5))
+    sns.histplot(previsoes_df["erro_absoluto"], bins=30, color="#1a5c2a", kde=True)
+    plt.title("FLAML: distribuição dos erros absolutos")
+    plt.xlabel("Erro absoluto (R$/litro)")
+    plt.ylabel("Frequência")
+    plt.savefig(OUT_FIG / "flaml_hist_erro_absoluto.png", dpi=140, bbox_inches="tight")
+    plt.close()
+
+    regiao_df = previsoes_df.groupby("regiao")["erro_absoluto"].mean().reset_index()
+    regiao_df.columns = ["regiao", "mae"]
+    plt.figure(figsize=(8, 5))
+    sns.barplot(
+        data=regiao_df.sort_values("mae", ascending=False),
+        x="mae",
+        y="regiao",
+        color="#4a9e6b",
+    )
+    plt.title("FLAML: MAE por região")
+    plt.xlabel("MAE (R$/litro)")
+    plt.ylabel("Região")
+    plt.savefig(OUT_FIG / "flaml_mae_por_regiao.png", dpi=140, bbox_inches="tight")
     plt.close()
 
     if importancia.empty:

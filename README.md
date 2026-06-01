@@ -23,7 +23,7 @@ Este projeto também é utilizado como base para a atividade de comparação de 
 | Versão | Conteúdo | Arquivos |
 |---|---|---|
 | **v1.0** | Parte 1: Explicação teórica sobre AutoML; Parte 2: Descrição do dataset | `docs/relatorios/v1.0/relatorio_auto_ml_equipe9_v01.0.tex` e `.pdf` |
-| **v2.0** | Parte 3: Aplicação da primeira ferramenta AutoML (FLAML) | `docs/relatorios/v2.0/relatorio_auto_ml_equipe9_v02.1.tex` e `.pdf` |
+| **v2.0** | Parte 3: Aplicação da primeira ferramenta AutoML (FLAML) | `docs/relatorios/v2.0/relatorio_auto_ml_equipe9_v02.0.tex` e `.pdf` |
 | **v3.0** | Parte 4: Aplicação da segunda ferramenta (LightAutoML); Parte 5: Reflexão e comparação | `docs/relatorios/v3.0/relatorio_auto_ml_equipe9_v03.0.tex` e `.pdf` |
 
 ### Experimento FLAML
@@ -250,20 +250,20 @@ analise-combustiveis-anp-pca-mds/
 │   │   │   ├── relatorio_auto_ml_equipe9_v01.0.pdf
 │   │   │   └── uea-logo.png
 │   │   ├── v2.0/                    # v2.0: aplicação FLAML
-│   │   │   ├── relatorio_auto_ml_equipe9_v02.1.tex
-│   │   │   ├── relatorio_auto_ml_equipe9_v02.1.pdf
+│   │   │   ├── relatorio_auto_ml_equipe9_v02.0.tex
+│   │   │   ├── relatorio_auto_ml_equipe9_v02.0.pdf
 │   │   │   └── uea-logo.png
 │   │   └── v3.0/                    # v3.0: aplicação LightAutoML e reflexão (entrega final)
 │   │       ├── relatorio_auto_ml_equipe9_v03.0.tex
 │   │       ├── relatorio_auto_ml_equipe9_v03.0.pdf
 │   │       └── uea-logo.png
 │   ├── report/                      # Relatório da análise PCA e MDS
-│   ├── slides/                      # Apresentação oral do grupo
+│   ├── slides/                      # Apresentações orais do grupo
 │   └── diagrams/
 │       └── logo.svg                 # Logo do projeto
 ├── outputs/
-│   ├── figures/                     # Gráficos gerados por PCA, MDS e FLAML
-│   └── tables/                      # Tabelas de resultados por PCA, MDS e FLAML
+│   ├── figures/                     # Gráficos gerados por PCA, MDS, FLAML e LightAutoML
+│   └── tables/                      # Tabelas de resultados por PCA, MDS, FLAML e LightAutoML
 ├── requirements.txt
 └── README.md
 ````
@@ -357,9 +357,9 @@ torch
 | Tabelas de apoio | `outputs/tables/` |
 | Slides | `docs/slides/apresentacao_pca_mds_anp.pdf` |
 | Relatório AutoML v1.0 | `docs/relatorios/v1.0/relatorio_auto_ml_equipe9_v01.0.tex` e `.pdf` |
-| Relatório AutoML v2.0 | `docs/relatorios/v2.0/relatorio_auto_ml_equipe9_v02.1.tex` e `.pdf` |
+| Relatório AutoML v2.0 | `docs/relatorios/v2.0/relatorio_auto_ml_equipe9_v02.0.tex` e `.pdf` |
 | Relatório AutoML v3.0 | `docs/relatorios/v3.0/relatorio_auto_ml_equipe9_v03.0.tex` e `.pdf` |
-| Slides da apresentação AutoML | `apresentacao_resultados_automl.md` |
+| Slides da apresentação AutoML | `docs/slides/apresentacao_resultados_automl.md` |
 
 Principais resultados do recorte 2021-2025 (27 UFs, 1619 registros UF-mês após o join corrigido mês+UF e alinhamento do PCA atual):
 

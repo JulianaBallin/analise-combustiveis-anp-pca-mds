@@ -1,5 +1,5 @@
 % ==============================================================================
-% Relatório AutoML v4.2 - Equipe 9
+% Relatório AutoML v2.0 - Equipe 9
 % Universidade do Estado do Amazonas (UEA)
 % Disciplina: Ciência de Dados
 % Equipe 9: FLAML e LightAutoML
@@ -31,7 +31,7 @@
 \usepackage{amsmath}
 
 % ==============================================================================
-% Graficos, cores e diagramas
+% Gráficos, cores e diagramas
 % ==============================================================================
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -50,14 +50,14 @@
 \usepackage{enumitem}
 
 % ==============================================================================
-% Caixas e codigo
+% Caixas e código
 % ==============================================================================
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 \usepackage{hyperref}
 
 % ==============================================================================
-% Geometria da pagina
+% Geometria da página
 % ==============================================================================
 \geometry{
   a4paper,
@@ -98,7 +98,7 @@
   linkcolor   = ueagreen,
   urlcolor    = ueamint,
   citecolor   = ueagray,
-  pdftitle    = {Relatório AutoML v4.2 - Equipe 9 - UEA Ciência de Dados},
+  pdftitle    = {Relatório AutoML v2.0 - Equipe 9 - UEA Ciência de Dados},
   pdfauthor   = {Ana Beatriz Maciel Nunes, Fernando Luiz Da Silva Freire, Juliana Ballin Lima},
   pdfsubject  = {AutoML: FLAML e LightAutoML aplicados ao dataset ANP},
   pdfkeywords = {AutoML, FLAML, LightAutoML, ANP, Combustíveis, Ciência de Dados, UEA}
@@ -114,7 +114,7 @@
 \renewcommand{\arraystretch}{1.25}
 
 % ==============================================================================
-% Formatacao de secoes
+% Formatação de seções
 % ==============================================================================
 \titleformat{\section}[block]
   {\Large\bfseries\color{ueagreen}}
@@ -155,7 +155,7 @@
 }
 
 % ==============================================================================
-% Cabecalho e rodape
+% Cabeçalho e rodapé
 % ==============================================================================
 \pagestyle{fancy}
 \fancyhf{}
@@ -164,7 +164,7 @@
 \fancyhead[R]{\vspace{-2mm}\projlogo}
 \fancyfoot[L]{\textcolor{ueagray}{\small UEA $\cdot$ Equipe 9}}
 \fancyfoot[C]{\textcolor{ueagray}{\small\textbullet\quad\thepage\quad\textbullet}}
-\fancyfoot[R]{\textcolor{ueagray}{\small v4.2}}
+\fancyfoot[R]{\textcolor{ueagray}{\small v2.0}}
 \renewcommand{\headrulewidth}{0.6pt}
 \renewcommand{\headrule}{%
   \hbox to\headwidth{\color{ueagreen}\leaders\hrule height \headrulewidth\hfill}}
@@ -173,7 +173,7 @@
   \hbox to\headwidth{\color{ueagray}\leaders\hrule height \footrulewidth\hfill}}
 
 % ==============================================================================
-% Caixas utilitarias
+% Caixas utilitárias
 % ==============================================================================
 \newtcolorbox{notebox}{
   colback=alertlight,
@@ -246,7 +246,7 @@
     \textbf{Disciplina:}  & Ciência de Dados \\[2mm]
     \textbf{Equipe:}      & 9 \\[2mm]
     \textbf{Ferramentas:} & FLAML e LightAutoML \\[2mm]
-    \textbf{Versão:}      & 4.0 \\[2mm]
+    \textbf{Versão:}      & 2.0 \\[2mm]
     \textbf{Data:}        & 30 de maio de 2026 \\[2mm]
     \textbf{Integrantes:} & Ana Beatriz Maciel Nunes \\
                           & Fernando Luiz Da Silva Freire \\
@@ -277,7 +277,7 @@
   {\small \textcopyright{} 2026 Equipe 9, Ciência de Dados, UEA. Uso acadêmico.}
 
   \vspace{2mm}
-  {\small UEA $\cdot$ Equipe 9 $\bullet$ v4.2}
+  {\small UEA $\cdot$ Equipe 9 $\bullet$ v2.0}
   \end{center}
   \vspace*{\fill}
 \end{titlepage}
@@ -289,7 +289,7 @@
 \color{ueadark}
 
 % ==============================================================================
-% Historico de versoes
+% Histórico de versões
 % ==============================================================================
 \thispagestyle{fancy}
 \section*{Histórico de Versões}
@@ -300,8 +300,7 @@
   \thead{Versão} & \thead{Data} & \thead{Autores} & \thead{Descrição} \\
   \midrule
   1.0 & 26/05/2026 & Equipe 9 & Criação inicial do relatório. Parte 1: explicação teórica sobre AutoML. Parte 2: descrição do dataset ANP utilizado na atividade. \\
-  \taltrow 2.0 & 26/05/2026 & Equipe 9 & Complemento da segunda entrega. Parte 3: aplicação da primeira ferramenta AutoML, FLAML, ao problema de regressão do preço médio da gasolina C. \\
-  4.0 & 30/05/2026 & Equipe 9 & Ampliação da Parte 3 com comparação a baselines simples, análise de erros por região e discussão de validade experimental. \\
+  \taltrow 2.0 & 30/05/2026 & Equipe 9 & Segunda entrega. Parte 3: aplicação da primeira ferramenta AutoML, FLAML, com métricas, comparação a baselines simples, análise de erros por região e discussão de validade experimental. \\
   \bottomrule
 \end{tabularx}
 
@@ -311,21 +310,20 @@
 \textbf{Organização dos relatórios da atividade:}
 \begin{itemize}[leftmargin=1.2cm, topsep=2pt, itemsep=2pt]
   \item \textbf{v1.0}: Parte 1 - Explicação teórica sobre AutoML; Parte 2 - Descrição do dataset.
-  \item \textbf{v2.0}: Parte 3 - Aplicação da primeira ferramenta AutoML (FLAML).
-  \item \textbf{v4.2} (este documento): Parte 3 - versão ampliada com baseline, análise de erros e discussão de validade.
+  \item \textbf{v2.0} (este documento): Parte 3 - Aplicação da primeira ferramenta AutoML (FLAML), com baseline, análise de erros e discussão de validade.
 \end{itemize}
 \end{infobox}
 
 \newpage
 
 % ==============================================================================
-% Sumario
+% Sumário
 % ==============================================================================
 \tableofcontents
 \newpage
 
 % ==============================================================================
-% SECAO 1 - Explicacao Teorica sobre AutoML
+% SEÇÃO 1 - Explicação Teórica sobre AutoML
 % ==============================================================================
 \section{Explicação Teórica sobre AutoML}
 \label{sec:automl-teoria}
@@ -461,7 +459,7 @@ permanece insubstituível nas etapas que exigem julgamento, contexto e responsab
 \newpage
 
 % ==============================================================================
-% SECAO 2 - Descricao do Dataset
+% SEÇÃO 2 - Descrição do Dataset
 % ==============================================================================
 \section{Descrição do Dataset}
 \label{sec:dataset}
@@ -617,7 +615,7 @@ ambas as ferramentas.
 \end{notebox}
 
 % ==============================================================================
-% SECAO 3 - Aplicacao da Primeira Ferramenta AutoML
+% SEÇÃO 3 - Aplicação da Primeira Ferramenta AutoML
 % ==============================================================================
 \newpage
 \section{Aplicação da Primeira Ferramenta AutoML}
