@@ -1,0 +1,2 @@
+ferramenta,tipo_problema,variavel_alvo,metrica_principal,rmse_teste,mae_teste,r2_teste,mape_teste_percentual,tempo_execucao_segundos,time_budget_segundos,registros_treino,registros_teste,random_state,test_size
+LightAutoML,regressão,preco_medio_gasolina_c,RMSE,0.11451561471482959,0.08974990283118353,0.9694657133969079,1.5084440958827576,91.7514796000005,120,1295,324,42,0.2
