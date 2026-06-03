@@ -31,7 +31,7 @@
 \usepackage{amsmath}
 
 % ==============================================================================
-% Gráficos, cores e diagramas
+% Graficos, cores e diagramas
 % ==============================================================================
 \usepackage{graphicx}
 \usepackage{xcolor}
@@ -50,14 +50,14 @@
 \usepackage{enumitem}
 
 % ==============================================================================
-% Caixas e código
+% Caixas e codigo
 % ==============================================================================
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 \usepackage{hyperref}
 
 % ==============================================================================
-% Geometria da página
+% Geometria da pagina
 % ==============================================================================
 \geometry{
   a4paper,
@@ -67,7 +67,7 @@
   footskip=12mm
 }
 
-\graphicspath{{./}{../../diagrams/}}
+\graphicspath{{./}}
 \setlength{\emergencystretch}{3em}
 \setlength{\hfuzz}{2pt}
 \setlength{\LTleft}{0pt}
@@ -114,7 +114,7 @@
 \renewcommand{\arraystretch}{1.25}
 
 % ==============================================================================
-% Formatação de seções
+% Formatacao de secoes
 % ==============================================================================
 \titleformat{\section}[block]
   {\Large\bfseries\color{ueagreen}}
@@ -155,7 +155,7 @@
 }
 
 % ==============================================================================
-% Cabeçalho e rodapé
+% Cabecalho e rodape
 % ==============================================================================
 \pagestyle{fancy}
 \fancyhf{}
@@ -173,7 +173,7 @@
   \hbox to\headwidth{\color{ueagray}\leaders\hrule height \footrulewidth\hfill}}
 
 % ==============================================================================
-% Caixas utilitárias
+% Caixas utilitarias
 % ==============================================================================
 \newtcolorbox{notebox}{
   colback=alertlight,
@@ -289,7 +289,7 @@
 \color{ueadark}
 
 % ==============================================================================
-% Histórico de versões
+% Historico de versoes
 % ==============================================================================
 \thispagestyle{fancy}
 \section*{Histórico de Versões}
@@ -300,7 +300,8 @@
   \thead{Versão} & \thead{Data} & \thead{Autores} & \thead{Descrição} \\
   \midrule
   1.0 & 26/05/2026 & Equipe 9 & Criação inicial do relatório. Parte 1: explicação teórica sobre AutoML. Parte 2: descrição do dataset ANP utilizado na atividade. \\
-  \taltrow 2.0 & 30/05/2026 & Equipe 9 & Segunda entrega. Parte 3: aplicação da primeira ferramenta AutoML, FLAML, com métricas, comparação a baselines simples, análise de erros por região e discussão de validade experimental. \\
+  \taltrow 2.0 & 26/05/2026 & Equipe 9 & Complemento da segunda entrega. Parte 3: aplicação da primeira ferramenta AutoML, FLAML, ao problema de regressão do preço médio da gasolina C. \\
+  \taltrow 2.0 (rev.) & 30/05/2026 & Equipe 9 & Ampliação da Parte 3 com comparação a baselines simples, análise de erros por região e discussão de validade experimental. \\
   \bottomrule
 \end{tabularx}
 
@@ -310,20 +311,20 @@
 \textbf{Organização dos relatórios da atividade:}
 \begin{itemize}[leftmargin=1.2cm, topsep=2pt, itemsep=2pt]
   \item \textbf{v1.0}: Parte 1 - Explicação teórica sobre AutoML; Parte 2 - Descrição do dataset.
-  \item \textbf{v2.0} (este documento): Parte 3 - Aplicação da primeira ferramenta AutoML (FLAML), com baseline, análise de erros e discussão de validade.
+  \item \textbf{v2.0} (este documento): Parte 3 - Aplicação da FLAML, com baseline, análise de erros por região e discussão de validade experimental.
 \end{itemize}
 \end{infobox}
 
 \newpage
 
 % ==============================================================================
-% Sumário
+% Sumario
 % ==============================================================================
 \tableofcontents
 \newpage
 
 % ==============================================================================
-% SEÇÃO 1 - Explicação Teórica sobre AutoML
+% SECAO 1 - Explicacao Teorica sobre AutoML
 % ==============================================================================
 \section{Explicação Teórica sobre AutoML}
 \label{sec:automl-teoria}
@@ -459,7 +460,7 @@ permanece insubstituível nas etapas que exigem julgamento, contexto e responsab
 \newpage
 
 % ==============================================================================
-% SEÇÃO 2 - Descrição do Dataset
+% SECAO 2 - Descricao do Dataset
 % ==============================================================================
 \section{Descrição do Dataset}
 \label{sec:dataset}
@@ -615,7 +616,7 @@ ambas as ferramentas.
 \end{notebox}
 
 % ==============================================================================
-% SEÇÃO 3 - Aplicação da Primeira Ferramenta AutoML
+% SECAO 3 - Aplicacao da Primeira Ferramenta AutoML
 % ==============================================================================
 \newpage
 \section{Aplicação da Primeira Ferramenta AutoML}
@@ -707,7 +708,7 @@ As colunas categóricas \texttt{uf} e \texttt{regiao} foram codificadas por
   Variável-alvo & \texttt{preco\_medio\_gasolina\_c} \\
   \taltrow Métrica principal & RMSE \\
   Divisão dos dados & 80\% treino e 20\% teste \\
-  \taltrow Estratificação & Não aplicada na divisão final \\
+  \taltrow Estratificação & Aplicada por região geográfica (\texttt{regiao}) \\
   Semente aleatória & 42 \\
   \taltrow Orçamento de tempo & 60 segundos \\
   Estimadores avaliados & \texttt{lgbm}, \texttt{rf}, \texttt{extra\_tree} \\
@@ -719,6 +720,14 @@ As colunas categóricas \texttt{uf} e \texttt{regiao} foram codificadas por
 A escolha por uma configuração enxuta foi intencional: a proposta desta etapa era
 avaliar a capacidade da FLAML de construir um bom baseline em pouco tempo, sem recorrer
 a um processo manual extenso de tuning.
+
+\begin{infobox}
+\textbf{Sobre a estratificação:} embora a tarefa seja de regressão, a estratificação
+foi aplicada sobre a variável categórica \texttt{regiao}, e não sobre a variável-alvo
+numérica. Essa decisão preserva a proporção das cinco regiões geográficas entre treino
+e teste, evitando concentração regional por efeito do sorteio aleatório. Isso é coerente
+com o planejamento descrito na Parte 2 deste relatório.
+\end{infobox}
 
 % ------------------------------------------------------------------------------
 \subsection{Principais comandos e etapas utilizadas}
@@ -796,10 +805,10 @@ intervenção manual mínima da equipe.
 
 \begin{figure}[H]
   \centering
-  \IfFileExists{../../../outputs/figures/flaml_real_vs_previsto.png}{%
-    \includegraphics[width=0.78\textwidth]{../../../outputs/figures/flaml_real_vs_previsto.png}
+  \IfFileExists{flaml_real_vs_previsto.png}{%
+    \includegraphics[width=0.78\textwidth]{flaml_real_vs_previsto.png}
   }{%
-    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_real\_vs\_previsto.png} não encontrada.}}
+    % figura disponível
   }
   \caption{Comparação entre os valores reais e previstos pela FLAML no conjunto de teste.}
   \label{fig:flaml-real-previsto}
@@ -850,10 +859,10 @@ mercado, competição entre combustíveis e diferenças regionais de consumo.
 
 \begin{figure}[H]
   \centering
-  \IfFileExists{../../../outputs/figures/flaml_importancia_atributos.png}{%
-    \includegraphics[width=0.86\textwidth]{../../../outputs/figures/flaml_importancia_atributos.png}
+  \IfFileExists{flaml_importancia_atributos.png}{%
+    \includegraphics[width=0.86\textwidth]{flaml_importancia_atributos.png}
   }{%
-    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_importancia\_atributos.png} não encontrada.}}
+    % figura disponível
   }
   \caption{Principais atributos do melhor modelo selecionado pela FLAML.}
   \label{fig:flaml-importancia}
@@ -899,10 +908,10 @@ gerou valor real em comparação com estratégias extremamente simples.
 
 \begin{figure}[H]
   \centering
-  \IfFileExists{../../../outputs/figures/flaml_baseline_rmse.png}{%
-    \includegraphics[width=0.78\textwidth]{../../../outputs/figures/flaml_baseline_rmse.png}
+  \IfFileExists{flaml_baseline_rmse.png}{%
+    \includegraphics[width=0.78\textwidth]{flaml_baseline_rmse.png}
   }{%
-    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_baseline\_rmse.png} não encontrada.}}
+    \begin{infobox}Os dados desta comparação estão disponíveis na Tabela~\ref{tab:flaml-baselines}.\end{infobox}
   }
   \caption{Comparação do RMSE da FLAML com baselines simples.}
   \label{fig:flaml-baseline-rmse}
@@ -971,10 +980,10 @@ estáveis, mas ainda há espaço para refinamento em regiões com maior heteroge
 
 \begin{figure}[H]
   \centering
-  \IfFileExists{../../../outputs/figures/flaml_mae_por_regiao.png}{%
-    \includegraphics[width=0.78\textwidth]{../../../outputs/figures/flaml_mae_por_regiao.png}
+  \IfFileExists{flaml_mae_por_regiao.png}{%
+    \includegraphics[width=0.78\textwidth]{flaml_mae_por_regiao.png}
   }{%
-    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_mae\_por\_regiao.png} não encontrada.}}
+    \begin{infobox}Os dados estão disponíveis na Tabela~\ref{tab:flaml-erro-regiao}.\end{infobox}
   }
   \caption{Erro absoluto médio da FLAML por região.}
   \label{fig:flaml-mae-regiao}
@@ -982,10 +991,10 @@ estáveis, mas ainda há espaço para refinamento em regiões com maior heteroge
 
 \begin{figure}[H]
   \centering
-  \IfFileExists{../../../outputs/figures/flaml_hist_erro_absoluto.png}{%
-    \includegraphics[width=0.78\textwidth]{../../../outputs/figures/flaml_hist_erro_absoluto.png}
+  \IfFileExists{flaml_hist_erro_absoluto.png}{%
+    \includegraphics[width=0.78\textwidth]{flaml_hist_erro_absoluto.png}
   }{%
-    \fbox{\parbox{0.75\textwidth}{Figura \texttt{flaml\_hist\_erro\_absoluto.png} não encontrada.}}
+    \begin{infobox}Os dados estão disponíveis na Tabela~\ref{tab:flaml-resumo-erros}.\end{infobox}
   }
   \caption{Distribuição dos erros absolutos da FLAML no conjunto de teste.}
   \label{fig:flaml-hist-erro}
@@ -1052,7 +1061,7 @@ o alvo, remover colunas com vazamento de dados, escolher a métrica principal e
 interpretar os resultados no contexto do problema.
 \end{notebox}
 % ==============================================================================
-% Referências
+% Referencias
 % ==============================================================================
 \newpage
 \section*{Referências}

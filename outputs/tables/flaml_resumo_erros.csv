@@ -1,2 +1,8 @@
-mediana_erro_absoluto,percentil_75,percentil_90,percentil_95,max_erro_absoluto,desvio_padrao_erro_assinado,erro_medio_assinado
-0.05860591163743534,0.11548301675230843,0.18431053213501442,0.21637907951013638,0.7991820504566922,0.11502598078437742,-0.00023939659587418957
+resumo,valor
+Mediana do erro absoluto,0.05711030614190582
+75% dos erros absolutos,0.10759627727631371
+90% dos erros absolutos,0.17328088146235396
+95% dos erros absolutos,0.20446046704002907
+Máximo erro absoluto,0.7093341599169616
+Desvio-padrão do erro assinado,0.10701725520523317
+Erro médio assinado,-0.0006234400437398792
